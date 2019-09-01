@@ -1,0 +1,101 @@
+code {
+    background-color: #bdbdbd;
+    margin: 2px;
+    color: #607D8B;
+}
+
+#action-buttons {
+    margin: 10px;
+}
+
+#vvv-about {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+#vvv-about p {
+    margin: 4px 0;
+}
+
+#vvv-about .vvv-version {
+    padding: 10px;
+    margin: 20px 0;
+    width: 200px;
+    text-align: center;
+}
+
+#vvv-about .vvv-version .vvv-check-update {
+    margin-left: 10px;
+}
+
+.vvv-count {
+    padding-left: 10px;
+    font-size: 0.9rem;
+}
+
+.vvv-table-top-action {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.vvv-form {
+    margin: 20px 0;
+}
+
+.vvv-header {
+    background-color: #66b1ff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+    color: #f4f4f5;
+}
+
+.vvv-header-action {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.vvv-header-action div {
+    display: inline;
+}
+
+.vvv-header-icon {
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.vvv-header-icon span {
+    margin: 5px;
+}
+
+.vvv-menu-icon {
+    margin: 0 5px;
+}
+
+.vvv-question-btn {
+    margin-left: 10px !important;
+}
+
+.vvv-pagination {
+    margin-top: 20px;
+}
+
+.vvv-title {
+    margin-left: 30px;
+    font-size: 1.6rem;
+    font-weight: 500;
+}
+
+.vvv-custom-option {
+    display: flex;
+    justify-content: space-between;
+}
+
+.vvv-custom-option span:last-child {
+    color: #8492a6;
+    font-size: 0.8rem;
+}
+
+.vvv-language {
+    cursor: pointer;
+}
