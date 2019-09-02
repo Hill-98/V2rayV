@@ -10,9 +10,9 @@ abstract class Base
 {
     protected $path;
 
-    public function getPath(bool $windows = false): string
+    public function getPath(bool $real = false): string
     {
-        return Path::resolve($this->path, $windows);
+        return Path::resolve($this->path, $real);
     }
 
     public function readFile(): string
