@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
 using System.Management;
+using System.Security.Cryptography;
 
 namespace Launcher
 {
@@ -114,12 +115,27 @@ namespace Launcher
 #else
             string PhpBin = basePath + "php\\php.exe";
 #endif
+#if !DEBUG
             string EnvFile = basePath + ".env";
-            if (!File.Exists(EnvFile))
+            FileStream stream = new FileStream(EnvFile + ".vvv", FileMode.Open);
+            byte[] hash = MD5.Create().ComputeHash(stream);
+            string EnvNewHash = BitConverter.ToString(hash).Replace("-", "");
+            stream.Close();
+            string EnvCurrHash = string.Empty;
+            if (File.Exists(EnvFile + ".md5"))
             {
-                File.Copy(EnvFile + ".vvv", EnvFile);
-                Process.Start(PhpBin, artisan + " key:generate");
+                EnvCurrHash = File.ReadAllText(EnvFile + ".md5");
             }
+            if (!File.Exists(EnvFile) || EnvNewHash != EnvCurrHash)
+            {
+                File.Copy(EnvFile + ".vvv", EnvFile, true);
+                Process.Start(PhpBin, artisan + " key:generate");
+                Process.Start(PhpBin, artisan + " config:cache");
+                File.WriteAllText(EnvFile + ".md5", EnvNewHash);
+            }
+#endif
+
+
             V2rayV = new Process()
             {
                 StartInfo =
