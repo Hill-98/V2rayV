@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Launcher
 {
@@ -40,6 +41,9 @@ namespace Launcher
                 }
                 };
                 process.Start();
+            } else
+            {
+                Program.notifyIcon.ShowBalloonTip(3000, Application.ProductName, "V2ray Core not found.", ToolTipIcon.Info);
             }
         }
 

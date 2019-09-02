@@ -1,9 +1,5 @@
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Launcher
 {
@@ -13,15 +9,15 @@ namespace Launcher
         {
             try
             {
-                RegistryKey Run = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
+                RegistryKey runReg = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
                 string filename = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
                 if (boot)
                 {
-                    Run.SetValue("V2rayV", filename);
+                    runReg.SetValue("V2rayV", filename);
                 }
                 else
                 {
-                    Run.DeleteValue("V2rayV");
+                    runReg.DeleteValue("V2rayV");
                 }
             }
             catch (Exception)

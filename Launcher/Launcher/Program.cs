@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
 using System.Management;
 using System.Security.Cryptography;
+using System.Threading;
 
 namespace Launcher
 {
@@ -17,8 +16,8 @@ namespace Launcher
 #else
         public static string basePath = AppDomain.CurrentDomain.BaseDirectory;
 #endif
-        private static string wathPath = basePath + "storage\\app\\";
-        static NotifyIcon notifyIcon;
+        private static readonly string wathPath = basePath + "storage\\app\\";
+        public static NotifyIcon notifyIcon;
         static Process V2rayV;
         static Process V2rayV_Queue;
         static void Main(string[] args)
@@ -53,8 +52,13 @@ namespace Launcher
                 ContextMenu = contextMenu
             };
             notifyIcon.DoubleClick += Icon_DoubleClick;
-            Start(args);
-            Application.Run();
+            if (Start(args))
+            {
+                Application.Run();
+            } else
+            {
+                Exit();
+            }
         }
 
         private static void FileWatch_Changed(object sender, FileSystemEventArgs e)
@@ -96,7 +100,7 @@ namespace Launcher
             file.Close();
         }
 
-        private static void Start(string[] args)
+        private static bool Start(string[] args)
         {
             string context;
             if (File.Exists(wathPath + "boot.vvv"))
@@ -108,39 +112,47 @@ namespace Launcher
             {
                 context = File.ReadAllText(wathPath + "v2ray.vvv");
                 setV2ray(context);
-            } 
+            }
             string artisan = basePath + "artisan";
 #if DEBUG
-            string PhpBin = @"D:\laragon\bin\php\php7\php.exe";
+            string phpBin = @"D:\laragon\bin\php\php7\php.exe";
 #else
-            string PhpBin = basePath + "php\\php.exe";
-#endif
-#if !DEBUG
-            string EnvFile = basePath + ".env";
-            FileStream stream = new FileStream(EnvFile + ".vvv", FileMode.Open);
+            string phpBin = basePath + "php\\php.exe";
+            Php php = new Php(Path.GetDirectoryName(phpBin));
+            if (!File.Exists(phpBin))
+            {
+                Task<bool> phpDownload = Task.Run(() => php.Download());
+                phpDownload.Wait();
+                if (!phpDownload.Result)
+                {
+                    Thread.Sleep(3000);
+                    return false;
+                }
+            }
+            php.UpdatePhpIni();
+            string envFile = basePath + ".env";
+            FileStream stream = new FileStream(envFile + ".vvv", FileMode.Open);
             byte[] hash = MD5.Create().ComputeHash(stream);
-            string EnvNewHash = BitConverter.ToString(hash).Replace("-", "");
+            string envNewHash = BitConverter.ToString(hash).Replace("-", "");
             stream.Close();
-            string EnvCurrHash = string.Empty;
-            if (File.Exists(EnvFile + ".md5"))
+            string envCurrHash = string.Empty;
+            if (File.Exists(envFile + ".md5"))
             {
-                EnvCurrHash = File.ReadAllText(EnvFile + ".md5");
+                envCurrHash = File.ReadAllText(envFile + ".md5");
             }
-            if (!File.Exists(EnvFile) || EnvNewHash != EnvCurrHash)
+            if (!File.Exists(envFile) || envNewHash != envCurrHash)
             {
-                File.Copy(EnvFile + ".vvv", EnvFile, true);
-                Process.Start(PhpBin, artisan + " key:generate");
-                Process.Start(PhpBin, artisan + " config:cache");
-                File.WriteAllText(EnvFile + ".md5", EnvNewHash);
+                File.Copy(envFile + ".vvv", envFile, true);
+                Process.Start(phpBin, artisan + " key:generate");
+                Process.Start(phpBin, artisan + " config:cache");
+                File.WriteAllText(envFile + ".md5", envNewHash);
             }
 #endif
-
-
             V2rayV = new Process()
             {
                 StartInfo =
                 {
-                    FileName = PhpBin,
+                    FileName = phpBin,
                     Arguments = artisan + " vvv:start",
                     WorkingDirectory = basePath,
                     UseShellExecute = false,
@@ -152,7 +164,7 @@ namespace Launcher
             {
                 StartInfo =
                 {
-                    FileName = PhpBin,
+                    FileName = phpBin,
                     Arguments = artisan + " queue:work --queue=high,default",
                     WorkingDirectory = basePath,
                     UseShellExecute = false,
@@ -170,12 +182,12 @@ namespace Launcher
             V2rayV.Start();
             V2rayV.BeginOutputReadLine();
 #if !DEBUG
-            if (args.Length != 0 && args[0] == "autorun")
+            if (args.Length == 0 || args[0] != "autorun")
             {
-                return;
+                OpenWebUI();
             }
-            OpenWebUI();
 #endif
+            return true;
         }
 
         private static void setBoot(string context)
