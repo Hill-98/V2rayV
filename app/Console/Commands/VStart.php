@@ -43,7 +43,9 @@ class VStart extends Command
         $database = database_path("database.sqlite");
         if (!file_exists($database)) {
             copy("${database}.example", $database);
-            $this->call("migrate:fresh");
+            $this->call("migrate", [
+                "--force" => true
+            ]);
         }
         echo "Ready" . PHP_EOL;
         if ($setting->auto_update_v2ray || file_exists(storage_path("app/v2ray/v2ray.exe"))) {

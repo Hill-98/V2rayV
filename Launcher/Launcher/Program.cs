@@ -98,10 +98,16 @@ namespace Launcher
         private static void Start(string[] args)
         {
             string context;
-            context = File.ReadAllText(wathPath + "boot.vvv");
-            setBoot(context);
-            context = File.ReadAllText(wathPath + "v2ray.vvv");
-            setV2ray(context);
+            if (File.Exists(wathPath + "boot.vvv"))
+            {
+                context = File.ReadAllText(wathPath + "boot.vvv");
+                setBoot(context);
+            }
+            if (File.Exists(wathPath + "v2ray.vvv"))
+            {
+                context = File.ReadAllText(wathPath + "v2ray.vvv");
+                setV2ray(context);
+            } 
             string artisan = basePath + "artisan";
 #if DEBUG
             string PhpBin = @"D:\laragon\bin\php\php7\php.exe";
@@ -154,7 +160,6 @@ namespace Launcher
             }
             OpenWebUI();
 #endif
-
         }
 
         private static void setBoot(string context)
@@ -196,8 +201,14 @@ namespace Launcher
         {
             notifyIcon.Visible = false;
             V2ray.Control(V2ray.STOP);
-            KillProcessAndChildren(V2rayV.Id);
-            KillProcessAndChildren(V2rayV_Queue.Id);
+            if (V2rayV != null && !V2rayV.HasExited)
+            {
+                KillProcessAndChildren(V2rayV.Id);
+            }
+            if (V2rayV_Queue != null && !V2rayV_Queue.HasExited)
+            {
+                KillProcessAndChildren(V2rayV_Queue.Id);
+            }
             Application.Exit();
         }
 
