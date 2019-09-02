@@ -105,8 +105,10 @@ Homestead.json
 .phpunit.result.cache
 .php_cs.cache
 
+/php
+
 public/css
 public/fonts
 public/js
 public/mix-manifest.json
-
+/Launcher.exe

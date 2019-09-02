@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Helper\Network;
 use App\Helper\V2ray;
 use App\V2rayV\Setting;
-use GuzzleHttp\Client;
+use App\Helper\GuzzleHttpClient;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -42,7 +42,7 @@ class V2rayUpdate implements ShouldQueue
      */
     public function handle(Network $network, Setting $setting)
     {
-        $client = new Client([
+        $client = new GuzzleHttpClient([
             "proxy" => $network->getProxyUrl($setting->update_v2ray_proxy)
         ]);
         try {

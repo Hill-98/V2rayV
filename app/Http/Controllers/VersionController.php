@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\GuzzleHttpClient;
 use App\Helper\Network;
 use App\Helper\V2ray;
 use App\Models\ErrorCode;
 use App\V2rayV\Setting;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;

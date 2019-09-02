@@ -2,9 +2,9 @@
 
 namespace App\Helper;
 
+use App\Helper\GuzzleHttpClient;
 use App\Jobs\V2rayUpdate;
 use App\V2rayV\Setting;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Str;
 
@@ -30,7 +30,7 @@ class V2ray
             "curr_version" => $version,
             "new_version" => $version
         ];
-        $client = new Client([
+        $client = new GuzzleHttpClient([
             "base_uri" => "https://api.github.com",
             "proxy" => $this->network_helper->getProxyUrl($this->setting->update_v2ray_proxy)
         ]);

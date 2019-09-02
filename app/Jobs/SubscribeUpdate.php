@@ -3,10 +3,10 @@
 namespace App\Jobs;
 
 use App\Exceptions\V2ray\NotExist;
+use App\Helper\GuzzleHttpClient;
 use App\Helper\Network;
 use App\V2rayV\ShareURL;
 use App\V2rayV\Subscribe;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Database\Eloquent\Collection;
@@ -61,7 +61,7 @@ class SubscribeUpdate implements ShouldQueue
             $subscribe->update_at = now();
             $subscribe->last_success = false;
             try {
-                $client = new Client([
+                $client = new GuzzleHttpClient([
                     "proxy" => $network->getProxyUrl($subscribe->proxy_update)
                 ]);
                 $response = $client->get($subscribe->url);
