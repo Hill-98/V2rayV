@@ -152,7 +152,7 @@ namespace Launcher
             {
                 StartInfo =
                 {
-                    FileName = @"D:\laragon\bin\php\php7\php.exe",
+                    FileName = PhpBin,
                     Arguments = artisan + " queue:work --queue=high,default",
                     WorkingDirectory = basePath,
                     UseShellExecute = false,
