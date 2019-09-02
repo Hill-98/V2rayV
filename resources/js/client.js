@@ -26,9 +26,9 @@ export default (method, url, data) => {
     }
     return new Promise((resolve, reject) => {
         client({
-            method: method,
-            url: url,
-            data: data
+            method,
+            url,
+            data
         })
             .then(response => resolve(response.data))
             .catch(error => reject(error));

@@ -126,7 +126,6 @@ routes = map(routes, value => {
 });
 
 const redirect = [];
-
 // 为所有页面生成默认语言重定向
 forEach(routes, value => {
     if (startsWith(value.path, "/:lang")) {

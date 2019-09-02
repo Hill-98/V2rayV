@@ -1,13 +1,13 @@
 import {Message} from "element-ui";
-import {isFunction, isUndefined, toInteger} from "lodash/lang";
+import {isFunction, isUndefined} from "lodash/lang";
 import {get, has} from "lodash/object";
 import {i18n} from "../i18n";
 
 const ErrorMessage = {
-    "103": {},
-    "401": {},
-    "402": {},
-    "901": {
+    103: {},
+    401: {},
+    402: {},
+    901: {
         text(target, data) {
             const key = get(data, "key");
             if (!isUndefined(key) && has(ValidationKey, `${target}.${key}`)) {
@@ -26,11 +26,11 @@ const ErrorMessage = {
 
         }
     },
-    "902": {},
-    "903": {},
-    "904": {},
-    "905": {},
-    "911": {}
+    902: {},
+    903: {},
+    904: {},
+    905: {},
+    911: {}
 };
 
 const ErrorName = {
@@ -80,15 +80,13 @@ const ValidationKey = {
 
 export default function (target, data) {
     let error_text;
-    for (const error in ErrorMessage) {
-        if (toInteger(error) === data.code) {
-            const text = get(ErrorMessage, `${error}.text`);
-            if (isFunction(text)) {
-                error_text = text(target, data.data)
-            } else {
-                let name = has(ErrorName, target) ? i18n.t(get(ErrorName, target)) : "";
-                error_text = i18n.t(`error.api.${error}`, {value: name});
-            }
+    if (has(ErrorMessage, data.code)) {
+        const text = get(ErrorMessage, `${data.code}.text`);
+        if (isFunction(text)) {
+            error_text = text(target, data.data)
+        } else {
+            let name = has(ErrorName, target) ? i18n.t(get(ErrorName, target)) : "";
+            error_text = i18n.t(`error.api.${data.code}`, {value: name});
         }
     }
     if (!isUndefined(error_text)) {

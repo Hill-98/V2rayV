@@ -28,7 +28,7 @@ export const Languages = [
 ];
 
 const default_lang = "en-US";
-const loadedLanguages = ["en-US"];
+const loadedLanguages = [default_lang];
 // 获取用户语言
 let lang = localStorage.getItem("vvv-lang");
 if (!isString(lang) || !includes(Languages, lang)) {

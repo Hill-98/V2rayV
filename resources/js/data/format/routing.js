@@ -7,7 +7,7 @@ import extRules from "../routing/extRules";
 
 const ext_rules = map(extRules, "value");
 
-export default (data) => {
+export default data => {
     const rule_name = [
         "proxy",
         "direct",

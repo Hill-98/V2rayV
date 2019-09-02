@@ -2,7 +2,7 @@ import {Message} from "element-ui";
 import {i18n} from "../i18n";
 import has from "lodash/has";
 
-export default function (error) {
+export default error => {
     let error_text;
     if (error.response) {
         if (has(error.response.data, "message")) {

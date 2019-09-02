@@ -103,7 +103,7 @@
                 deleteItem(item, popover, Api, this);
             },
             subscribeUpdate(id) {
-                Api.subscribe_update(id)
+                Api.subscribeUpdate(id)
                     .then(() => Notification.success(this.$i18n.t("subscribe.index.subscribe_update")))
                     .catch(window.EMPTY_FUNC);
             }

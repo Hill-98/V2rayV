@@ -1,10 +1,10 @@
 import {isArray, isNumber, isObject, toInteger} from "lodash/lang";
-import {has} from "lodash/object";
+import has from "lodash/has";
 import join from "lodash/join";
 import map from "lodash/map";
 import {split, trim} from "lodash/string";
 
-export default (data) => {
+export default data => {
     data.port = toInteger(data.port);
     if (data.protocol === "vmess") {
         if (has(data.protocol_setting, "alterId")) {

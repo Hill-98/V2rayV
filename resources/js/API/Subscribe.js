@@ -4,7 +4,7 @@ import toInteger from "lodash/toInteger";
 class Subscribe extends Common {
     static prefix = "subscribe";
 
-    static subscribe_update(id) {
+    static subscribeUpdate(id) {
         return this.client("post", `${this.prefix}/update/`, {id: toInteger(id)});
     }
 }
