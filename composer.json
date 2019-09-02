@@ -1,24 +1,16 @@
 {
-    "name": "laravel/laravel",
-    "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": [
-        "framework",
-        "laravel"
-    ],
-    "license": "MIT",
     "require": {
         "php": "^7.1.3",
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-pdo_sqlite": "*",
+        "ext-zip": "*",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "~6.0",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
         "moontoast/math": "^1.1",
-        "ramsey/uuid": "^3.8",
-        "ext-zip": "*"
+        "ramsey/uuid": "^3.8"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.6",
@@ -67,11 +59,5 @@
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
         ]
-    },
-    "repositories": {
-        "packagist": {
-            "type": "composer",
-            "url": "https://mirrors.aliyun.com/composer/"
-        }
     }
 }
