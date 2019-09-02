@@ -10,7 +10,6 @@ use App\V2rayV\Setting;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Str;
 
 class VersionController extends Controller
 {
@@ -41,35 +40,42 @@ class VersionController extends Controller
 
     public function checkUpdate(Request $request)
     {
-//        $client = new Client([
-//            "base_uri" => "https://api.github.com",
-//            "proxy" => $this->network_helper->getProxyUrl($this->setting->update_v2ray_proxy)
-//        ]);
-        if ($request->input("check") !== "1") {
-            $v2ray_check_update = $this->v2ray_helper->checkUpdate();
-            if (!$v2ray_check_update) {
-                return Response::result(false, ErrorCode::CHECK_UPDATE_FAIL);
+        $version = $this->getVersion();
+        $vvv_check_update = [
+            "is_update" => false,
+            "curr_version" => $version,
+            "new_version" => $version
+        ];
+        $client = new GuzzleHttpClient([
+            "base_uri" => "https://api.github.com",
+            "proxy" => $this->network_helper->getProxyUrl($this->setting->update_v2ray_proxy)
+        ]);
+        try {
+            $response = $client->get("/repos/Hill-98/V2rayV/releases/latest");
+            $json = json_decode($response->getBody()->getContents(), true);
+            if (!empty($json["tag_name"]) && $json["tag_name"] !== $vvv_check_update["curr_version"]) {
+                $vvv_check_update["is_update"] = true;
+                $vvv_check_update["new_version"] = $json["tag_name"];
+            }
+        } catch (RequestException $e) {
+            if ($e->getCode() !== 404) {
+                $vvv_check_update = false;
             }
         }
-        $vvv_is_update = false;
-        $vvv_curr_version = $this->getVersion();
-        $vvv_new_version = $this->getVersion();
+        $v2ray_check_update = true;
+        if ($request->input("check") !== "1") {
+            $v2ray_check_update = $this->v2ray_helper->checkUpdate();
+        }
+        if (!$vvv_check_update || !$v2ray_check_update) {
+            return Response::result(false, ErrorCode::CHECK_UPDATE_FAIL);
+        }
         $data =  [
-            "vvv" => [
-                "is_update" => $vvv_is_update,
-                "curr_version" => $vvv_curr_version,
-                "new_version" => $vvv_new_version
-            ],
+            "vvv" => $vvv_check_update
         ];
         if (isset($v2ray_check_update)) {
             $data["v2ray"] = $v2ray_check_update;
         }
         return Response::result(true, 0, "", $data);
-    }
-
-    private function isWin64()
-    {
-        return PHP_INT_SIZE === 8;
     }
 
     private function getVersion(): string
