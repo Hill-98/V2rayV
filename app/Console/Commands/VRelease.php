@@ -21,6 +21,8 @@ class VRelease extends Command
      */
     protected $description = "Release V2rayV";
 
+    private $base_path;
+
     private $ignorePath = [
         "app/Console/Commands/VRelease.php",
         ".git",
@@ -59,6 +61,7 @@ class VRelease extends Command
      */
     public function __construct()
     {
+        $this->base_path = base_path();
         parent::__construct();
     }
 
@@ -69,23 +72,85 @@ class VRelease extends Command
      */
     public function handle()
     {
-        $zip = new ZipArchive();
-        $res = $zip->open(base_path() . "/../V2rayV.zip", ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
-        if ($res !== true) {
-            exit(-1);
+        $npm_script = [
+            "install",
+            "upgrade",
+            "prod"
+        ];
+        foreach ($npm_script as $value) {
+            $cmd = "yarn $value";
+//            $this->runCmd($cmd);
         }
-        $this->addFilesToZip($zip, base_path());
+        $vswhere = getenv("ProgramFiles(x86)") . "\\Microsoft Visual Studio\\Installer\\vswhere.exe";
+        if (!file_exists($vswhere)) {
+            $this->line("Not found: $vswhere", "fg=red");
+            exit();
+        }
+        $cmd = "\"${vswhere}\" -nologo -latest -property installationPath";
+        $this->line("Run $cmd", "fg=blue");
+        $vsPath = exec($cmd);
+        if (!file_exists($vsPath)) {
+            $this->line("Not found Microsoft Visual Studio install path.", "fg=red");
+            exit();
+        }
+        $msbuild = "${vsPath}\\MSBuild\\Current\\Bin\\MSBuild.exe";
+        if (!file_exists($msbuild)) {
+            $this->line("No msbuild found in the Microsoft Visual Studio installation directory: $msbuild", "fg=red");
+            exit();
+        }
+        $property = "Configuration=Release;OutDir={$this->base_path};DebugSymbols=false;DebugType=None";
+        $csproj_path = realpath("{$this->base_path}/Launcher/Launcher/Launcher.csproj");
+        $cmd = "\"${msbuild}\" -t:Rebuild -p:$property $csproj_path";
+        $this->runCmd($cmd);
+        $zip = new ZipArchive();
+        $zipPath = "{$this->base_path}/../V2rayV.zip";
+        if (!file_exists($zipPath)) {
+            file_put_contents($zipPath, "");
+        }
+        $zipPath = realpath($zipPath);
+        $res = $zip->open($zipPath, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
+        $this->line("Creating zip archive", "fg=green");
+        if ($res !== true) {
+            $this->line("Zip open fail: $zipPath", "fg=red");
+            exit();
+        }
+        $this->addFilesToZip($zip, $this->base_path);
         $zip->close();
+        $this->line("Zip save to: $zipPath", "fg=green");
+        sleep(1);
+        exec("explorer.exe /select, \"${zipPath}\"");
+    }
+
+    private function runCmd(string $cmd)
+    {
+        $this->line("Run $cmd", "fg=blue");
+        $proc = proc_open($cmd, [
+            0 => ["pipe", "r"],
+            1 => ["pipe", "w"],
+            2 => ["pipe", "w"]
+        ], $pipes, $this->base_path);
+        if (!is_resource($proc)) {
+            $this->line("Run fail: $cmd", "fg=red");
+            exit();
+        }
+        while ($buffer = fgets($pipes[1])) {
+            echo $buffer;
+        }
+        echo PHP_EOL;
+        fclose($pipes[1]);
+        proc_close($proc);
     }
 
     private function addFilesToZip(ZipArchive $zip, string $path)
     {
-        $name = str_replace(base_path(), "", $path);
+        // 获取基于项目根目录的相对路径
+        $name = str_replace($this->base_path, "", $path);
         $name = str_replace("\\", "/", $name);
         if (!empty($name) && in_array(substr($name, 1), $this->ignorePath)) {
             return;
         }
         if (is_dir($path)) {
+            // 不添加根目录
             if (!empty($name)) {
                 $zip->addEmptyDir($name);
             }

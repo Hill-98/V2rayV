@@ -104,12 +104,11 @@ Homestead.json
 /.vagrant
 .phpunit.result.cache
 .php_cs.cache
-
 /php
-
 public/css
 public/fonts
 public/js
 public/mix-manifest.json
 /Launcher.exe
+/Launcher.exe.config
 /.env.md5

@@ -123,7 +123,11 @@ namespace Launcher
             {
                 Task<bool> phpDownload = Task.Run(() => php.Download());
                 phpDownload.Wait();
-                if (!phpDownload.Result)
+                if (phpDownload.Result)
+                {
+                    notifyIcon.Text = Application.ProductName;
+                }
+                else
                 {
                     Thread.Sleep(3000);
                     return false;

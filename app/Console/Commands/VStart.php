@@ -47,7 +47,7 @@ class VStart extends Command
                 "--force" => true
             ]);
         }
-        echo "Ready" . PHP_EOL;
+        $this->line("Ready");
         if ($setting->auto_update_v2ray || file_exists(storage_path("app/v2ray/v2ray.exe"))) {
             dispatch(function () use ($v2ray) {
                 $v2ray->checkUpdate();
