@@ -79,7 +79,7 @@ class VRelease extends Command
         ];
         foreach ($npm_script as $value) {
             $cmd = "yarn $value";
-//            $this->runCmd($cmd);
+            $this->runCmd($cmd);
         }
         $vswhere = getenv("ProgramFiles(x86)") . "\\Microsoft Visual Studio\\Installer\\vswhere.exe";
         if (!file_exists($vswhere)) {
