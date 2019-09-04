@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Model\Routing
+ * App\Models\Routing
  *
  * @property int $id
  * @property string $name

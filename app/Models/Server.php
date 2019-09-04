@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Model\Server
+ * App\Models\Server
  *
  * @property int $id
  * @property string $name
@@ -65,6 +65,6 @@ class Server extends Model
 
     public function subscribe()
     {
-        return $this->hasOne("App\Model\Subscribe", "id", "subscribe_id");
+        return $this->hasOne(Subscribe::class, "id", "subscribe_id");
     }
 }

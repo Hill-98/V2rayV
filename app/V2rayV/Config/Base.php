@@ -133,9 +133,7 @@ class Base
                 "port" => $mainHttpPort,
                 "listen" => "127.0.0.1",
                 "protocol" => "http",
-                "settings" => [
-//                    "userLevel" => 0
-                ],
+//                "settings" => (),
                 "tag" => "server-main-in-http",
                 "sniffing" => [
                     "enabled" => false,

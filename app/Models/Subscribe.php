@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Model\Subscribe
+ * App\Models\Subscribe
  *
  * @property int $id
  * @property string $name
@@ -52,7 +52,7 @@ class Subscribe extends Model
 
     public function servers()
     {
-        return $this->hasMany("App\Model\Server");
+        return $this->hasMany(Server::class);
     }
 
     public function getLastSuccessAttribute($value)

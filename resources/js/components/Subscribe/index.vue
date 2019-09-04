@@ -26,7 +26,6 @@
                 </template>
             </el-table-column>
             <el-table-column :formatter="formatterUpdateTime" :label="$t('subscribe.index.last_update_time')" prop="update_at"></el-table-column>
-
             <el-table-column :label="$t('common.action')">
                 <template slot-scope="scope">
                     <el-button :disabled="working" size="mini" type="primary" v-t="'common.edit'"
@@ -94,6 +93,9 @@
                 return value ? this.$i18n.t("common.yes") : this.$i18n.t("common.no");
             },
             formatterUpdateTime(row, col, value) {
+                if (value === null) {
+                    return "";
+                }
                 return new Date(value * 1000).toLocaleString();
             },
             getIndexList(page) {

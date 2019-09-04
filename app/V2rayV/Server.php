@@ -9,7 +9,6 @@ use App\Exceptions\V2ray\DeleteFail;
 use App\Exceptions\V2ray\NotExist;
 use App\Exceptions\V2ray\ValidationException;
 use App\Exceptions\V2ray\Server\ServerLocalPortExist;
-use App\Models\ServerTraffic;
 use App\Models\Server as Model;
 use App\V2rayV\Config\Base;
 use App\V2rayV\Validation\Server as Validation;
@@ -75,13 +74,6 @@ class Server extends Data
             if ($list->isNotEmpty()) {
                 throw new AlreadyExists();
             }
-            $traffic = new ServerTraffic();
-        } else {
-            /** @var ServerTraffic $traffic */
-            $traffic = ServerTraffic::whereServerId($model->id)->get()->first;
-            if ($data["address"] !== $model->address) {
-                $traffic->total_use = 0;
-            }
         }
         // 本地端口是否重复
         if (!empty($data["local_port"])) {
@@ -100,10 +92,6 @@ class Server extends Data
         }
         $data["enable"] = !empty($data["enable"]);
         $result = parent::save($data, $model);
-        if ($result !== 0) {
-            $traffic->server_id = $result;
-            $traffic->save();
-        };
         return $result;
     }
 

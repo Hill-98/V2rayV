@@ -24,7 +24,7 @@ class SubscribeIndex extends ResourceCommon
             "is_encrypt" => !empty($this->password),
             "server_count" => $this->servers()->count(),
             "last_success" => $this->last_success,
-            "update_at" => $this->update_at->timestamp
+            "update_at" => $this->update_at === null ? null : $this->update_at->timestamp
         ];
     }
 }
