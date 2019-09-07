@@ -95,24 +95,6 @@ class Server extends Data
     }
 
     /**
-     * @param int $id
-     * @return int
-     * @throws DeleteFail
-     * @throws \App\Exceptions\V2ray\NotExist
-     */
-    public function delete(int $id): int
-    {
-        /** @var Model $model */
-        $model = $this->get($id);
-        try {
-            $model->delete();
-            return $model->id;
-        } catch (\Exception $e) {
-            throw new DeleteFail();
-        }
-    }
-
-    /**
      * 导出客户端/服务器配置
      *
      * @param array $servers
