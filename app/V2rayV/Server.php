@@ -91,8 +91,7 @@ class Server extends Data
             $data["local_port"] = intval($data["local_port"]);
         }
         $data["enable"] = !empty($data["enable"]);
-        $result = parent::save($data, $model);
-        return $result;
+        return parent::save($data, $model);
     }
 
     /**
@@ -107,9 +106,7 @@ class Server extends Data
         $model = $this->get($id);
         try {
             $model->delete();
-            // 删除服务器的流量统计
-            $model->traffic->delete();
-            return $model->toArray()["id"];
+            return $model->id;
         } catch (\Exception $e) {
             throw new DeleteFail();
         }
