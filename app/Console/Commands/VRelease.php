@@ -73,7 +73,6 @@ class VRelease extends Command
     {
         $npm_script = [
             "install",
-            "upgrade",
             "prod"
         ];
         foreach ($npm_script as $value) {
