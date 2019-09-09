@@ -46,7 +46,6 @@ class VRelease extends Command
         ".gitignore",
         ".styleci.yml",
         "_ide_helper.php",
-        "composer.json",
         "composer.lock",
         "package.json",
         "phpunit.xml",
