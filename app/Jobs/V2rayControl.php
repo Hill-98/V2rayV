@@ -50,13 +50,17 @@ class V2rayControl implements ShouldQueue
             return;
         }
         $config = $generate();
+        $this->control(V2ray::STOP);
         if (empty($config)) {
-            $this->control(V2ray::STOP);
             return;
         }
+        sleep(1);
         foreach ($config["log"] as $value) {
             if (file_exists($value)) {
-                unlink($value);
+                try {
+                    unlink($value);
+                } catch (\Exception $e) {
+                }
             }
         }
         Storage::put("v2ray/config.json", json_encode($config, JSON_PRETTY_PRINT));
