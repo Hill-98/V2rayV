@@ -18,12 +18,21 @@ namespace Launcher
 #endif
         private static readonly string wathPath = basePath + "storage\\app\\";
         public static NotifyIcon notifyIcon;
-        static Process V2rayV;
-        static Process V2rayV_Queue;
+        static Process V2rayV_Process;
+        static Process V2rayV_Queue_Process;
         static void Main(string[] args)
         {
+            // 禁止重复运行
+            bool isRuned;
+            Mutex mutex = new Mutex(true, "OnlyRunOneInstance", out isRuned);
+            if (!isRuned)
+            {
+                OpenWebUI();
+                return;
+            }
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
+
             // 文件监控服务
             try
             {
@@ -103,16 +112,23 @@ namespace Launcher
         private static bool Start(string[] args)
         {
             string context;
-            if (File.Exists(wathPath + "boot.vvv"))
+            try
             {
-                context = File.ReadAllText(wathPath + "boot.vvv");
-                setBoot(context);
+                if (File.Exists(wathPath + "boot.vvv"))
+                {
+                    context = File.ReadAllText(wathPath + "boot.vvv");
+                    setBoot(context);
+                }
+                if (File.Exists(wathPath + "v2ray.vvv"))
+                {
+                    context = File.ReadAllText(wathPath + "v2ray.vvv");
+                    setV2ray(context);
+                }
             }
-            if (File.Exists(wathPath + "v2ray.vvv"))
+            catch (Exception)
             {
-                context = File.ReadAllText(wathPath + "v2ray.vvv");
-                setV2ray(context);
             }
+
             string artisan = basePath + "artisan";
 #if DEBUG
             string phpBin = @"D:\laragon\bin\php\php7\php.exe";
@@ -134,25 +150,19 @@ namespace Launcher
                 }
             }
             php.UpdatePhpIni();
-            string envFile = basePath + ".env";
-            FileStream stream = new FileStream(envFile + ".vvv", FileMode.Open);
-            byte[] hash = MD5.Create().ComputeHash(stream);
-            string envNewHash = BitConverter.ToString(hash).Replace("-", "");
-            stream.Close();
-            string envCurrHash = string.Empty;
-            if (File.Exists(envFile + ".md5"))
+            V2rayV v2rayv = new V2rayV();
+            int check_status = v2rayv.CheckEnvFile();
+            if (check_status == -1)
             {
-                envCurrHash = File.ReadAllText(envFile + ".md5");
+                MessageBox.Show("V2rayV initialization failed,", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
-            if (!File.Exists(envFile) || envNewHash != envCurrHash)
+            else if (check_status != 0)
             {
-                File.Copy(envFile + ".vvv", envFile, true);
-                Process.Start(phpBin, artisan + " key:generate");
                 Process.Start(phpBin, artisan + " config:cache");
-                File.WriteAllText(envFile + ".md5", envNewHash);
             }
 #endif
-            V2rayV = new Process()
+            V2rayV_Process = new Process()
             {
                 StartInfo =
                 {
@@ -164,7 +174,7 @@ namespace Launcher
                     RedirectStandardOutput = true
                 }
             };
-            V2rayV_Queue = new Process()
+            V2rayV_Queue_Process = new Process()
             {
                 StartInfo =
                 {
@@ -175,16 +185,35 @@ namespace Launcher
                     CreateNoWindow = true,
                 }
             };
-            V2rayV.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+            V2rayV_Process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
             {
                 if (e.Data == "Ready")
                 {
-                    V2rayV_Queue.Start();
-                    V2rayV.CancelOutputRead();
+                    try
+                    {
+                        V2rayV_Queue_Process.Start();
+                        V2rayV_Process.CancelOutputRead();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("V2rayV Queue failed to start.\nException: " + ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Exit();
+                    }
+                    
                 }
             });
-            V2rayV.Start();
-            V2rayV.BeginOutputReadLine();
+#if !DEBUG
+            try
+            {
+                V2rayV_Process.Start();
+                V2rayV_Process.BeginOutputReadLine();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("V2rayV failed to start.\nException: " + e.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+#endif
 #if !DEBUG
             if (args.Length == 0 || args[0] != "autorun")
             {
@@ -233,13 +262,18 @@ namespace Launcher
         {
             notifyIcon.Visible = false;
             V2ray.Control(V2ray.STOP);
-            if (V2rayV != null && !V2rayV.HasExited)
+            try
             {
-                KillProcessAndChildren(V2rayV.Id);
+                KillProcessAndChildren(V2rayV_Process.Id);
+            } catch (Exception)
+            {
             }
-            if (V2rayV_Queue != null && !V2rayV_Queue.HasExited)
+            try
             {
-                KillProcessAndChildren(V2rayV_Queue.Id);
+                KillProcessAndChildren(V2rayV_Queue_Process.Id);
+            }
+            catch (Exception)
+            {
             }
             Application.Exit();
         }
@@ -250,7 +284,6 @@ namespace Launcher
         /// <param name="pid">Process ID.</param>
         private static void KillProcessAndChildren(int pid)
         {
-            // Cannot close 'system idle process'.
             if (pid == 0)
             {
                 return;

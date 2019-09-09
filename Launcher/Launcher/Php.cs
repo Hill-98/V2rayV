@@ -103,7 +103,16 @@ namespace Launcher
                 {
                 }
             }
-            File.Copy(sourceFile, destFile);
+            try
+            {
+                File.Copy(sourceFile, destFile, true);
+            }
+            catch (Exception e)
+            {
+                string msg = "PHP Runtime config file copy fail.\nYou can manually copy the file {0} to {1}\nException: {2}";
+                MessageBox.Show(string.Format(msg, sourceFile, destFile, e.Message), Application.ProductName + " - PHP Runtime Config File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
         }
 
         private void Client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
