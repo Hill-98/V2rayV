@@ -98,10 +98,9 @@ class Base
         foreach ($servers as $server) {
             $serverId = $server->id;
             $inboundClone = $inbound;
-            $tag = "server-";
+
             if (!$otherClient && $serverId === $mainServer) {
                 $port = $mainPort;
-                $tag .= "main-";
             } else {
                 // 不是主服务器的话本地端口不能为 0
                 $port = $server->local_port;
@@ -121,9 +120,8 @@ class Base
                         $port = rand(10000, 65535);
                     } while (in_array($port, $ports));
                 }
-                $tag .= "$serverId-";
             }
-            $tag .= "in";
+            $tag = "server-${serverId}-in";
             $inboundClone["port"] = $port;
             $inboundClone["tag"] = $tag;
             $inbounds[] = $inboundClone;
@@ -134,7 +132,7 @@ class Base
                 "listen" => "127.0.0.1",
                 "protocol" => "http",
 //                "settings" => (),
-                "tag" => "server-main-in-http",
+                "tag" => "server-${mainServer}-in-http",
                 "sniffing" => [
                     "enabled" => false,
                 ]
@@ -194,16 +192,12 @@ class Base
         foreach ($servers as $server) {
             $serverId = $server->id;
             $outboundClone = $outbound;
-            $tag = "server-";
-            if ($server->id === $mainServer) {
-                $tag .= "main-";
-            } else {
+            if ($server->id !== $mainServer) {
                 if ($server->local_port === 0) {
                     continue;
                 }
-                $tag .= "$serverId-";
             }
-            $tag .= "out";
+            $tag = "server-${serverId}-out";
             $outboundClone["protocol"] = $server->protocol;
             $method = Str::title($server->protocol) . "Outbound";
             $protocol_setting = call_user_func_array([$this->protocol, $method], [$server]);

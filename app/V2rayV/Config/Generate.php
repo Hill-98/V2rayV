@@ -29,6 +29,12 @@ class Generate
      */
     private $mainServer;
     /**
+     * 启用 HTTP 代理
+     *
+     * @var bool $enableHttpProxy
+     */
+    private $enableHttpProxy;
+    /**
      * 启用的服务器
      *
      * @var \Illuminate\Support\Collection $serverList
@@ -102,6 +108,7 @@ class Generate
         if (empty($this->config["dns"])) {
             unset($this->config["dns"]);
         }
+        $this->enableHttpProxy = $this->setting->main_http_port !== 0;
         $this->config["inbounds"] = array_merge(
             $this->config["inbounds"],
             $this->base->generateInboundsClient(
@@ -218,19 +225,12 @@ class Generate
         $serverRules = [];
         // 遍历服务器并设置代理规则
         foreach ($this->serverList as $server) {
-            $serverId = strval($server->id);
-            $tag = "server-";
-            if ($server->id === $this->mainServer) {
-                $tag .= "main-";
-            } else {
-                $tag .= "${serverId}-";
-            }
-            $tagIn = "${tag}in";
-            $tagOut = "${tag}out";
             $serverRule = $ruleConfig;
+            $serverRule["inboundTag"] = $this->generateTag($server->id, false);
+            $serverRule["outboundTag"] = $this->generateTag($server->id, true);
             // 当前服务器是否有自定义代理规则
-            if (isset($this->customRuleServers[$serverId])) {
-                $rule = $this->customRuleServers[$serverId];
+            if (isset($this->customRuleServers[$server->id])) {
+                $rule = $this->customRuleServers[$server->id];
                 $serverRule["network"] = $rule["network"];
                 if (!empty($rule["port"])) {
                     $serverRule["port"] = $rule["port"];
@@ -239,14 +239,12 @@ class Generate
                 if (!empty($rule["protocol"])) {
                     $serverRule["protocol"] = $rule["protocol"];
                     foreach ($this->config["inbounds"] as &$item) {
-                        if ($item["tag"] === $tagIn || $item["tag"] === $tagIn . "-http") {
+                        if ($item["tag"] === $serverRule["inboundTag"][0]) {
                             $item["sniffing"]["enabled"] = true;
                         }
                     }
                 };
             }
-            $serverRule["inboundTag"][] = $tagIn;
-            $serverRule["outboundTag"] = $tagOut;
             $serverRules[] = $serverRule;
         }
         $routingRules = array_merge($routingRules, $serverRules);
@@ -305,16 +303,14 @@ class Generate
             if ($config["servers"][0] === "all") {
                 /** @var Server $server */
                 foreach ($this->serverList as $server) {
-                    if ($server->id !== $this->mainServer || !$default) {
-                        $servers[] = $server->id;
-                    }
+                    $servers[] = $server->id;
                 }
             } else {
-                foreach ($config["servers"] as $server) {
+                foreach ($config["servers"] as $serverId) {
                     // 服务器是否存在
-                    if (($server !== $this->mainServer || !$default) &&
-                        $this->serverList->where("id", $server)->isNotEmpty()) {
-                        $servers[] = $server;
+                    if (($serverId !== $this->mainServer) &&
+                        $this->serverList->where("id", $serverId)->isNotEmpty()) {
+                        $servers[] = intval($serverId);
                     }
                 }
             }
@@ -322,8 +318,7 @@ class Generate
         $serverInTags = [];
         $serverOutTags = [];
         // 遍历适用于规则的服务器列表，生成 TAG 和服务器代理规则配置
-        foreach ($servers as $server) {
-            $serverId = strval($server);
+        foreach ($servers as $serverId) {
             // 是否已存在适用于当前服务器规则的配置
             if (isset($this->customRuleServers[$serverId])) {
                 $serverRule = $this->customRuleServers[$serverId];
@@ -335,7 +330,7 @@ class Generate
              * 只有优先级更高的路由规则生效
              */
             if (!isset($serverRule["network"])) {
-                $serverRule["network"] = $config["network"];
+                $serverRule["network"] = empty($config["network"]) ? "tcp,udp" : $config["network"];
             }
             if (!empty($config["port"])) {
                 if (empty($serverRule["port"])) {
@@ -347,16 +342,9 @@ class Generate
             if (empty($serverRule["protocol"]) && !empty($config["protocol"])) {
                 $serverRule["protocol"] = $config["protocol"];
             }
-
             $this->customRuleServers[$serverId] = $serverRule;
-            $tag = "server-";
-            if ($server === $this->mainServer) {
-                $tag .= "main-";
-            } else {
-                $tag .= "$server-";
-            }
-            $serverInTags[] = "${tag}in";
-            $serverOutTags[] = "${tag}out";
+            $serverInTags = array_merge($serverInTags, $this->generateTag($serverId, false));
+            $serverOutTags[] = $this->generateTag($serverId, true);
         }
         // 规则导出
         $result = [];
@@ -384,6 +372,34 @@ class Generate
         return $result;
     }
 
+    /**
+     * 生成配置标签
+     *
+     * @param int $server
+     * @param bool $out
+     * @param bool $http
+     * @return string|array
+     */
+    public function generateTag(int $server, bool $out, bool $http = true)
+    {
+        $prefix = "server-${server}-";
+        if ($out) {
+            return "${prefix}out";
+        } else {
+            $result = ["${prefix}in"];
+            if ($server === $this->mainServer && $this->enableHttpProxy && $http) {
+                $result[] = "${prefix}in-http";
+            }
+            return $result;
+        }
+    }
+
+    /**
+     * 分离域名和IP路由规则
+     *
+     * @param array $rule
+     * @param array $result
+     */
     private function routingRuleFilter(array $rule, array &$result)
     {
         $rule_ip = array_diff_key($rule, ["domain" => []]);

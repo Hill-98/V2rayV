@@ -13,7 +13,7 @@ class DefaultRouting
         "direct" => [],
         "block" => [],
         "port" => "",
-        "network" => "",
+        "network" => "tcp,udp",
         "protocol" => [],
     ];
     private $routingModel;
