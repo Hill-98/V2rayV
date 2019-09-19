@@ -98,16 +98,13 @@ class Base
         foreach ($servers as $server) {
             $serverId = $server->id;
             $inboundClone = $inbound;
-
             if (!$otherClient && $serverId === $mainServer) {
                 $port = $mainPort;
             } else {
                 // 不是主服务器的话本地端口不能为 0
                 $port = $server->local_port;
-                if ($port === 0) {
-                    if (!$otherClient) {
-                        continue;
-                    }
+                if ($port === 0 && !$otherClient) {
+                    continue;
                 } elseif ($port === $mainPort || $port === $mainHttpPort) {
                     continue;
                 }
@@ -121,6 +118,7 @@ class Base
                     } while (in_array($port, $ports));
                 }
             }
+            $ports[] = $port;
             $tag = "server-${serverId}-in";
             $inboundClone["port"] = $port;
             $inboundClone["tag"] = $tag;
@@ -192,7 +190,7 @@ class Base
         foreach ($servers as $server) {
             $serverId = $server->id;
             $outboundClone = $outbound;
-            if ($server->id !== $mainServer) {
+            if ($mainServer !== 0 && $server->id !== $mainServer) {
                 if ($server->local_port === 0) {
                     continue;
                 }
