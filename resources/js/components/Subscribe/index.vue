@@ -93,7 +93,7 @@
                 return value ? this.$i18n.t("common.yes") : this.$i18n.t("common.no");
             },
             formatterUpdateTime(row, col, value) {
-                return value === null ? "" : new Date(value * 1000).toLocaleString();
+                return value === null ? "" : new Date(value * 1000).toLocaleString(undefined, {hour12: false});
             },
             getIndexList(page) {
                 getIndexList(page, Api, this);
