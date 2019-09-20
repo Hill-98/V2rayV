@@ -295,7 +295,7 @@
                                 break;
                         }
                         if (new_count !== 0 && (this.meta.total <= this.meta.per_page)) {
-                            this.getList()
+                            this.getIndexList()
                         }
                     })
                     .catch(window.EMPTY_FUNC);
