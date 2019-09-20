@@ -6,7 +6,7 @@
         "ext-pdo_sqlite": "*",
         "ext-zip": "*",
         "fideloper/proxy": "^4.0",
-        "guzzlehttp/guzzle": "~6.0",
+        "guzzlehttp/guzzle": "^6.0",
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
         "moontoast/math": "^1.1",
