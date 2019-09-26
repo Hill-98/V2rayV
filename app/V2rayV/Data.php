@@ -87,7 +87,7 @@ abstract class Data
      * @param  array $data
      * @throws ValidationException
      */
-    public function valid(array $data)
+    public function valid(array $data): void
     {
         /**
          * @var Validation $valid
@@ -106,13 +106,13 @@ abstract class Data
     protected function save(array $data, Model $model = null): int
     {
         $this->valid($data);
-        if (empty($model)) {
+        if ($model === null) {
             $model = new $this->model();
-            if (isset($data["id"])) {
-                unset($data["id"]);
+            if (isset($data['id'])) {
+                unset($data['id']);
             }
         } else {
-            $data["id"] = $model->toArray()["id"];
+            $data['id'] = $model->toArray()['id'];
         }
         foreach ($this->dataCol as $col) {
             if (isset($data[$col])) {
@@ -124,7 +124,7 @@ abstract class Data
         } catch (\Exception $e) {
             throw new DataSaveFail();
         }
-        return $saveStatus ? $model->toArray()["id"] : 0;
+        return $saveStatus ? $model->toArray()['id'] : 0;
     }
 
     /**
@@ -163,7 +163,7 @@ abstract class Data
         $model = $this->get($id);
         try {
             $model->delete();
-            return $model->toArray()["id"];
+            return $model->toArray()['id'];
         } catch (\Exception $e) {
             throw new DeleteFail();
         }

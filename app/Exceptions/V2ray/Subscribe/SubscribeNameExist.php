@@ -10,6 +10,6 @@ class SubscribeNameExist extends Exception
 {
     public function __construct($message = 'Subscribe name already exists.', $code = ErrorCode::SUBSCRIBE_NAME_EXIST)
     {
-        parent::__construct($message, $code, null);
+        parent::__construct($message, $code);
     }
 }

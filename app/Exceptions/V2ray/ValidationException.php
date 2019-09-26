@@ -19,7 +19,7 @@ class ValidationException extends \Exception
     {
         $this->key = $key;
         $this->status = $status;
-        parent::__construct($message, ErrorCode::VALIDATION_EXCEPTION, null);
+        parent::__construct($message, ErrorCode::VALIDATION_EXCEPTION);
     }
 
     /**

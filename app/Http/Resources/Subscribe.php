@@ -16,7 +16,7 @@ class Subscribe extends ResourceCommon
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         $result = parent::toArray($request);
         $result['update_at'] = $this->update_at->timestamp;

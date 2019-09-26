@@ -67,7 +67,7 @@ class RoutingController extends Controller
     public function show(Request $request, $id)
     {
         if ($id === '0') {
-            return Response::result(true, 0, "", $this->defaultRouting->get());
+            return Response::result(true, 0, '', $this->defaultRouting->get());
         }
         try {
             return new ResourceModel($this->model->get((int)$id));
@@ -138,7 +138,7 @@ class RoutingController extends Controller
             } else {
                 $result_id = $this->model->update($config, $id);
             }
-            return Response::result(true, $code ?? 0, $msg ?? '', ['id' => $result_id]);
+            return Response::result(true, 0, '', ['id' => $result_id]);
         } catch (ValidationException $e) {
             return Response::result(
                 false,

@@ -100,7 +100,7 @@ class ShareURL
             $protocol_setting['vmess']['alterId'] = (int)$json['aid'];
             $server['name'] = $json['ps'];
             $server['address'] = $json['add'];
-            $server['port'] = (int)$json["port"];
+            $server['port'] = (int)$json['port'];
             $server['protocol'] = 'vmess';
             $server['protocol_setting'] = $protocol_setting['vmess'];
             $network = $json['net'];

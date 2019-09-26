@@ -27,7 +27,7 @@ class Router
             if ($filter !== '') {
                 $result->filter[] = $filter;
                 // 过滤器参数通过过滤器名称对应的查询字符串
-                $filter_value = $request->input($filter, null);
+                $filter_value = $request->input($filter);
                 if ($filter !== null) {
                     $result->filer_value[$filter] = $filter_value;
                 }

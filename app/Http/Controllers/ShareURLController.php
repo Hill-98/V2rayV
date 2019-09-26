@@ -46,6 +46,6 @@ class ShareURLController extends Controller
     public function import(Request $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->post();
-        return Response::result(true, 0, '', $this->shareURL->import($data, $request->input("password", "")));
+        return Response::result(true, 0, '', $this->shareURL->import($data, $request->input('password', '')));
     }
 }

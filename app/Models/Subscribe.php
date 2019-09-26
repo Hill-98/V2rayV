@@ -64,7 +64,7 @@ class Subscribe extends Model
      * @param $value
      * @return bool|null
      */
-    public function getLastSuccessAttribute($value)
+    public function getLastSuccessAttribute($value): ?bool
     {
         if ($value !== null) {
             $value = (bool)$value;

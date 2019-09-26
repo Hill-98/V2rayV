@@ -9,6 +9,6 @@ class AlreadyExists extends \Exception
 {
     public function __construct($message = 'Already exists.', $code = ErrorCode::ALREADY_EXISTS)
     {
-        parent::__construct($message, $code, null);
+        parent::__construct($message, $code);
     }
 }

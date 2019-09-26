@@ -9,6 +9,6 @@ class NotExist extends \Exception
 {
     public function __construct($message = 'Not Exist.', $code = ErrorCode::NOT_EXIST)
     {
-        parent::__construct($message, $code, null);
+        parent::__construct($message, $code);
     }
 }

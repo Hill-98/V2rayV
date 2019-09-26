@@ -111,7 +111,7 @@ class SubscribeController extends Controller
             'id' => 'required|numeric',
         ]);
         SubscribeUpdate::dispatch((int)$request->input('id'));
-        return Response::result(true, 0);
+        return Response::result(true);
     }
 
     /**
@@ -127,7 +127,7 @@ class SubscribeController extends Controller
             } else {
                 $result_id = $this->model->update($config, $id);
             }
-            return Response::result(true, $code ?? 0, $msg ?? '', ['id' => $result_id]);
+            return Response::result(true, 0, '', ['id' => $result_id]);
         } catch (ValidationException $e) {
             return Response::result(
                 false,

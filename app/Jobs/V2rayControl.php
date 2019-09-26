@@ -67,7 +67,11 @@ class V2rayControl implements ShouldQueue
         $this->control(V2ray::START);
     }
 
-    public function control($command)
+    /**
+     * @param $command
+     * @return void
+     */
+    public function control($command): void
     {
         Storage::put('v2ray.vvv', $command);
     }

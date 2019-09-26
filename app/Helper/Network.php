@@ -22,7 +22,7 @@ class Network
             return $proxy_url;
         }
         try {
-            $context = Storage::get("v2ray.vvv");
+            $context = Storage::get('v2ray.vvv');
             if ((int)$context === V2ray::START) {
                 $proxy_url = "socks://127.0.0.1:{$this->setting->main_port}";
             }

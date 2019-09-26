@@ -105,7 +105,7 @@ class Base
                  * 如果是为客户端生成配置文件，本地端口是0或者本地端口和已有的重复，将本地端口改为随机生成。
                  * 因为有可能本地端口是 0 的服务器，随机的生成端口，会和已有的本地端口重复。
                  */
-                if ($otherClient && ($port === 0 || in_array($port, $ports))) {
+                if ($otherClient && ($port === 0 || in_array($port, $ports, true))) {
                     do {
                         try {
                             $port = random_int(10000, 65535);
@@ -186,10 +186,8 @@ class Base
         foreach ($servers as $server) {
             $serverId = $server->id;
             $outboundClone = $outbound;
-            if ($mainServer !== 0 && $server->id !== $mainServer) {
-                if ($server->local_port === 0) {
-                    continue;
-                }
+            if ($mainServer !== 0 && $server->id !== $mainServer && $server->local_port === 0) {
+                continue;
             }
             $tag = "server-${serverId}-out";
             $outboundClone['protocol'] = $server->protocol;
