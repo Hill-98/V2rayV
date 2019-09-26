@@ -9,15 +9,15 @@ use Illuminate\Support\Facades\Storage;
 class DefaultRouting
 {
     private $default = [
-        "proxy" => [],
-        "direct" => [],
-        "block" => [],
-        "port" => "",
-        "network" => "tcp,udp",
-        "protocol" => [],
+        'proxy' => [],
+        'direct' => [],
+        'block' => [],
+        'port' => '',
+        'network' => 'tcp,udp',
+        'protocol' => [],
     ];
     private $routingModel;
-    private $routingPath = "config/routing.json";
+    private $routingPath = 'config/routing.json';
 
     /**
      * DefaultRouting constructor.
@@ -47,9 +47,9 @@ class DefaultRouting
      */
     public function put(array $config): bool
     {
-        $config["servers"] = ["all"];
+        $config['servers'] = ['all'];
         $this->routingModel->valid($config);
-        unset($config["servers"]);
+        unset($config['servers']);
         return Storage::put($this->routingPath, json_encode($config, JSON_PRETTY_PRINT));
     }
 

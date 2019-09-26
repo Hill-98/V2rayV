@@ -39,13 +39,13 @@ class V2rayControl implements ShouldQueue
      * @param Generate $generate
      * @return void
      */
-    public function handle(Generate $generate)
+    public function handle(Generate $generate): void
     {
         if ($this->code !== 0) {
             $this->control($this->code);
             return;
         }
-        $cache_token = Cache::get("V2rayControl");
+        $cache_token = Cache::get('V2rayControl');
         if ($cache_token !== $this->token) {
             return;
         }
@@ -55,7 +55,7 @@ class V2rayControl implements ShouldQueue
             return;
         }
         sleep(1);
-        foreach ($config["log"] as $value) {
+        foreach ($config['log'] as $value) {
             if (file_exists($value)) {
                 try {
                     unlink($value);
@@ -63,12 +63,12 @@ class V2rayControl implements ShouldQueue
                 }
             }
         }
-        Storage::put("v2ray/config.json", json_encode($config, JSON_PRETTY_PRINT));
+        Storage::put('v2ray/config.json', json_encode($config, JSON_PRETTY_PRINT));
         $this->control(V2ray::START);
     }
 
     public function control($command)
     {
-        Storage::put("v2ray.vvv", $command);
+        Storage::put('v2ray.vvv', $command);
     }
 }

@@ -14,7 +14,7 @@ class Path
     {
         $path = storage_path("app/$path");
         if ($real) {
-            $path = str_replace("/", "\\", $path);
+            $path = str_replace('/', "\\", $path);
         }
         return $path;
     }

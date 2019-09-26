@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 /**
  * Class Setting
  * @package App\V2rayV
+ * @property int main_server
  * @property int main_port
  * @property int main_http_port
  * @property bool allow_lan
@@ -21,14 +22,14 @@ use Illuminate\Support\Facades\Storage;
 class Setting
 {
     private $config = [
-        "main_server" => 1,
-        "main_port" => 10866,
-        "main_http_port" => 10668,
-        "allow_lan" => false,
-        "log_level" => "warning",
-        "auto_update_v2ray" => true,
-        "update_v2ray_proxy" => false,
-        "auto_start" => false,
+        'main_server' => 1,
+        'main_port' => 10866,
+        'main_http_port' => 10668,
+        'allow_lan' => false,
+        'log_level' => 'warning',
+        'auto_update_v2ray' => true,
+        'update_v2ray_proxy' => false,
+        'auto_start' => false,
     ];
 
     private $setting_file;
@@ -42,21 +43,33 @@ class Setting
         }
     }
 
+    /**
+     * @param $name
+     * @return mixed|null
+     */
     public function __get($name)
     {
-        if (isset($this->config[$name])) {
-            return $this->config[$name];
-        }
-        return null;
+        return $this->config[$name] ?? null;
+    }
+
+    public function __set($name, $value)
+    {
+        // TODO: Implement __set() method.
+    }
+
+    public function __isset($name)
+    {
+        // TODO: Implement __isset() method.
     }
 
     /**
      * @param array $config
      * @throws \App\Exceptions\V2ray\ValidationException
+     * @return void
      */
-    private function valid(array $config)
+    private function valid(array $config): void
     {
-        return (new Validation())($config);
+        (new Validation())($config);
     }
 
     /**
@@ -68,14 +81,6 @@ class Setting
     }
 
     /**
-     * @return int
-     */
-    public function getMainServer(): int
-    {
-        return $this->config["main_server"];
-    }
-
-    /**
      * @param array $config
      * @return bool
      * @throws \App\Exceptions\V2ray\ValidationException
@@ -83,8 +88,8 @@ class Setting
     public function save(array $config): bool
     {
         $this->valid($config);
-        if ($config["auto_start"] !== $this->config["auto_start"]) {
-            Storage::put("boot.vvv", var_export($config["auto_start"], true));
+        if ($config['auto_start'] !== $this->config['auto_start']) {
+            Storage::put('boot.vvv', var_export($config['auto_start'], true));
         }
         return $this->setting_file->writeFile(json_encode($config, JSON_PRETTY_PRINT));
     }
@@ -95,7 +100,7 @@ class Setting
      */
     public function setMainServer(int $id): bool
     {
-        $this->config["main_server"] = $id;
+        $this->config['main_server'] = $id;
         try {
             return $this->save($this->config);
         } catch (ValidationException $e) {

@@ -16,12 +16,12 @@ class Server extends ResourceCommon
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         return array_merge(parent::toArray($request), [
-            "subscribe" => [
-                "name" => $this->subscribe->name ?? "",
-                "id" => $this->subscribe->id ?? 0,
+            'subscribe' => [
+                'name' => $this->subscribe->name ?? '',
+                'id' => $this->subscribe->id ?? 0,
             ]
         ]);
     }

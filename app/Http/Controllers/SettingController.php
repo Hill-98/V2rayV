@@ -22,16 +22,19 @@ class SettingController extends Controller
         $this->model = $setting;
     }
 
-    public function get()
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function get(): \Illuminate\Http\JsonResponse
     {
-        return Response::result(true, 0, "", $this->model->get());
+        return Response::result(true, 0, '', $this->model->get());
     }
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function save(Request $request)
+    public function save(Request $request): ?\Illuminate\Http\JsonResponse
     {
         try {
             $result = $this->model->save($request->post());
@@ -41,22 +44,29 @@ class SettingController extends Controller
                 false,
                 $e->getCode(),
                 $e->getMessage(),
-                ["key" => $e->getKey(), "status" => $e->getStatus()]
+                ['key' => $e->getKey(), 'status' => $e->getStatus()]
             );
         }
     }
 
-    public function getMainServer()
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getMainServer(): \Illuminate\Http\JsonResponse
     {
-        return Response::result(true, 0, "", ["id" => $this->model->getMainServer()]);
+        return Response::result(true, 0, '', ['id' => $this->model->main_server]);
     }
 
-    public function setMainServer(Request $request)
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function setMainServer(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
-            "id" => "required|numeric",
+            'id' => 'required|numeric',
         ]);
-        $result = $this->model->setMainServer(intval($request->input("id")));
+        $result = $this->model->setMainServer((int)$request->input('id'));
         return Response::result($result, $result ? 0 : ErrorCode::DATA_SAVE_FAIL);
     }
 }

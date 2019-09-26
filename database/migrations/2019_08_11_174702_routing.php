@@ -11,19 +11,19 @@ class Routing extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create("routing", function (Blueprint $table) {
-            $table->bigIncrements("id");
-            $table->text("name");
-            $table->text("proxy");
-            $table->text("direct");
-            $table->text("block");
-            $table->text("port");
-            $table->string("network", 10);
-            $table->text("protocol");
-            $table->text("servers");
-            $table->boolean("enable");
+        Schema::create('routing', static function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->text('name');
+            $table->text('proxy');
+            $table->text('direct');
+            $table->text('block');
+            $table->text('port');
+            $table->string('network', 10);
+            $table->text('protocol');
+            $table->text('servers');
+            $table->boolean('enable');
         });
     }
 
@@ -32,7 +32,7 @@ class Routing extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
     }
 }

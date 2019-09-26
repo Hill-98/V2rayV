@@ -11,11 +11,4 @@
 |
 */
 
-Route::view('/', "app");
-//Route::prefix('/servers')->group(function () {
-//    Route::get("/", function () {
-//        return view('Servers');
-//    });
-//    Route::view('/add', "ServerEdit", ["action" => "add"]);
-//});
-
+Route::view('/', 'app');

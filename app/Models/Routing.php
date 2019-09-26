@@ -34,16 +34,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Routing extends Model
 {
-    protected $table = "routing";
+    protected $table = 'routing';
 
     public $timestamps = false;
 
     protected $casts = [
-        "proxy" => "array",
-        "direct" => "array",
-        "block" => "array",
-        "protocol" => "array",
-        "servers" => "array",
-        "enable" => "bool"
+        'proxy' => 'array',
+        'direct' => 'array',
+        'block' => 'array',
+        'protocol' => 'array',
+        'servers' => 'array',
+        'enable' => 'bool'
     ];
 }

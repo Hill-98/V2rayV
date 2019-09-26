@@ -22,14 +22,8 @@ class Base
      */
     private function networkSettingKey(string $network): string
     {
-        $keyList = [
-            "tcp" => "tcpSettings",
-            "kcp" => "kcpSettings",
-            "ws" => "wsSettings",
-            "http" => "httpSettings",
-            "quic" => "quicSettings"
-        ];
-        return $keyList[$network] ?? "";
+        $keyList = [];
+        return $keyList[$network] ?? "${network}Settings";
     }
 
     /**
@@ -40,23 +34,21 @@ class Base
     private function generateStreamSetting(Server $server, bool $client): array
     {
         $setting = [
-            "network" => "tcp",
-            "security" => "none",
-            "tlsSettings" => []
+            'network' => 'tcp',
+            'security' => 'none',
+            'tlsSettings' => []
         ];
-        $setting["network"] = $server->network;
-        $setting["security"] = $server->security;
+        $setting['network'] = $server->network;
+        $setting['security'] = $server->security;
         $network_setting = $server->network_setting;
-        if ($server->network === "tcp" && !$client) {
-            if (isset($network_setting["request"])) {
-                unset($network_setting["request"]);
-            }
+        if ($server->network === 'tcp' && !$client && isset($network_setting['request'])) {
+            unset($network_setting['request']);
         }
         $setting[$this->networkSettingKey($server->network)] = $network_setting;
         if (empty($server->security_setting)) {
-            unset($setting["tlsSettings"]);
+            unset($setting['tlsSettings']);
         } else {
-            $setting["tlsSettings"] = $server->security_setting;
+            $setting['tlsSettings'] = $server->security_setting;
         }
         return $setting;
     }
@@ -79,17 +71,17 @@ class Base
         int $mainHttpPort = 0
     ): array {
         $socks = [
-            "udp" => true,
+            'udp' => true,
 //            "userLevel" => 0,
         ];
         $inbound = [
-            "port" => 0,
-            "listen" => "127.0.0.1",
-            "protocol" => "socks",
-            "settings" => $socks,
-            "tag" => "",
-            "sniffing" => [
-                "enabled" => false,
+            'port' => 0,
+            'listen' => '127.0.0.1',
+            'protocol' => 'socks',
+            'settings' => $socks,
+            'tag' => '',
+            'sniffing' => [
+                'enabled' => false,
             ]
         ];
         $inbounds = [];
@@ -105,7 +97,8 @@ class Base
                 $port = $server->local_port;
                 if ($port === 0 && !$otherClient) {
                     continue;
-                } elseif ($port === $mainPort || $port === $mainHttpPort) {
+                }
+                if ($port === $mainPort || $port === $mainHttpPort) {
                     continue;
                 }
                 /**
@@ -114,25 +107,28 @@ class Base
                  */
                 if ($otherClient && ($port === 0 || in_array($port, $ports))) {
                     do {
-                        $port = rand(10000, 65535);
-                    } while (in_array($port, $ports));
+                        try {
+                            $port = random_int(10000, 65535);
+                        } catch (\Exception $e) {
+                        }
+                    } while (in_array($port, $ports, true));
                 }
             }
             $ports[] = $port;
             $tag = "server-${serverId}-in";
-            $inboundClone["port"] = $port;
-            $inboundClone["tag"] = $tag;
+            $inboundClone['port'] = $port;
+            $inboundClone['tag'] = $tag;
             $inbounds[] = $inboundClone;
         }
         if (!empty($mainHttpPort) && $mainPort !== $mainHttpPort) {
             $inbounds[] = [
-                "port" => $mainHttpPort,
-                "listen" => "127.0.0.1",
-                "protocol" => "http",
+                'port' => $mainHttpPort,
+                'listen' => '127.0.0.1',
+                'protocol' => 'http',
 //                "settings" => (),
-                "tag" => "server-${mainServer}-in-http",
-                "sniffing" => [
-                    "enabled" => false,
+                'tag' => "server-${mainServer}-in-http",
+                'sniffing' => [
+                    'enabled' => false,
                 ]
             ];
         }
@@ -148,22 +144,22 @@ class Base
     public function generateInboundsServer($servers): array
     {
         $inbound = [
-            "port" => 0,
-            "listen" => "0.0.0.0",
-            "protocol" => "",
-            "settings" => [],
-            "streamSettings" => []
+            'port' => 0,
+            'listen' => '0.0.0.0',
+            'protocol' => '',
+            'settings' => [],
+            'streamSettings' => []
         ];
         $inbounds = [];
         /** @var Server $server */
         foreach ($servers as $server) {
             $inboundClone = $inbound;
-            $inboundClone["port"] = $server->port;
-            $inboundClone["protocol"] = $server->protocol;
-            $method = Str::title($server->protocol) . "Inbound";
-            $protocol_setting = call_user_func_array([$this->protocol, $method], [$server]);
-            $inboundClone["settings"] = $protocol_setting;
-            $inboundClone["streamSettings"] = $this->generateStreamSetting($server, false);
+            $inboundClone['port'] = $server->port;
+            $inboundClone['protocol'] = $server->protocol;
+            $method = Str::title($server->protocol) . 'Inbound';
+            $protocol_setting = call_user_func([$this->protocol, $method], $server);
+            $inboundClone['settings'] = $protocol_setting;
+            $inboundClone['streamSettings'] = $this->generateStreamSetting($server, false);
             $inbounds[] = $inboundClone;
         }
         return $inbounds;
@@ -179,11 +175,11 @@ class Base
     public function generateOutbounds($servers, int $mainServer): array
     {
         $outbound = [
-            "protocol" => "",
-            "settings" => [],
-            "tag" => "",
-            "streamSettings" => [],
-            "mux" => []
+            'protocol' => '',
+            'settings' => [],
+            'tag' => '',
+            'streamSettings' => [],
+            'mux' => []
         ];
         $outbounds = [];
         /** @var Server $server */
@@ -196,13 +192,13 @@ class Base
                 }
             }
             $tag = "server-${serverId}-out";
-            $outboundClone["protocol"] = $server->protocol;
-            $method = Str::title($server->protocol) . "Outbound";
-            $protocol_setting = call_user_func_array([$this->protocol, $method], [$server]);
-            $outboundClone["settings"] = $protocol_setting;
-            $outboundClone["streamSettings"] = $this->generateStreamSetting($server, true);
-            $outboundClone["tag"] = $tag;
-            $outboundClone["mux"] = $server->mux;
+            $outboundClone['protocol'] = $server->protocol;
+            $method = Str::title($server->protocol) . 'Outbound';
+            $protocol_setting = call_user_func([$this->protocol, $method], $server);
+            $outboundClone['settings'] = $protocol_setting;
+            $outboundClone['streamSettings'] = $this->generateStreamSetting($server, true);
+            $outboundClone['tag'] = $tag;
+            $outboundClone['mux'] = $server->mux;
             $outbounds[] = $outboundClone;
         }
         return $outbounds;

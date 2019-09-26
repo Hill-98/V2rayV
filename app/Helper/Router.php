@@ -18,18 +18,18 @@ class Router
     {
         $result = new DataFilter();
         // 过滤器通过 URL 传参，以逗号分割。
-        if (empty($request->input("filter"))) {
+        if (empty($request->input('filter'))) {
             return $result;
         }
-        $filters = explode(",", $request->input("filter"));
-        foreach ($filters as $value) {
-            $value = trim($value);
-            if (!empty($value)) {
-                $result->filter[] = $value;
+        $filters = explode(',', $request->input('filter'));
+        foreach ($filters as $filter) {
+            $filter = trim($filter);
+            if ($filter !== '') {
+                $result->filter[] = $filter;
                 // 过滤器参数通过过滤器名称对应的查询字符串
-                $filter_value = $request->input($value, null);
-                if ($value !== null) {
-                    $result->filer_value[$value] = $filter_value;
+                $filter_value = $request->input($filter, null);
+                if ($filter !== null) {
+                    $result->filer_value[$filter] = $filter_value;
                 }
             }
         }

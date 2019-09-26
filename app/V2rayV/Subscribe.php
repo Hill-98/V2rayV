@@ -14,22 +14,21 @@ use App\V2rayV\Validation\Subscribe as Validation;
 class Subscribe extends Data
 {
     protected $dataCol = [
-        "name",
-        "url",
-        "mux",
-        "password",
-        "auto_update",
-        "proxy_update",
+        'name',
+        'url',
+        'mux',
+        'password',
+        'auto_update',
+        'proxy_update',
     ];
     protected $filterRule = [
-        "auto_update" => [
-            "col" => "auto_update"
+        'auto_update' => [
+            'col' => 'auto_update'
         ]
     ];
     /** @var Model  */
     protected $model = Model::class;
     protected $validation = Validation::class;
-
 
     /**
      * @param array $data
@@ -44,18 +43,18 @@ class Subscribe extends Data
     {
         if ($model === null) {
             try {
-                $this->getForName($data["name"]);
+                $this->getForName($data['name']);
                 throw new SubscribeNameExist();
             } catch (NotExist $e) {
             }
             try {
-                $this->getForUrl($data["url"]);
+                $this->getForUrl($data['url']);
                 throw new SubscribeURLExist();
             } catch (NotExist $e) {
             }
         }
-        $data["auto_update"] = !empty($data["auto_update"]);
-        $data["proxy_update"] = !empty($data["proxy_update"]);
+        $data['auto_update'] = !empty($data['auto_update']);
+        $data['proxy_update'] = !empty($data['proxy_update']);
         return parent::save($data, $model);
     }
 
@@ -64,7 +63,7 @@ class Subscribe extends Data
      * @return Model
      * @throws NotExist
      */
-    private function getForName(string $name)
+    private function getForName(string $name): Model
     {
         $subscribe = $this->model::whereName($name)->get()->first();
         if (empty($subscribe)) {
@@ -78,7 +77,7 @@ class Subscribe extends Data
      * @return Model
      * @throws NotExist
      */
-    private function getForUrl(string $url)
+    private function getForUrl(string $url): Model
     {
         $subscribe = $this->model::whereUrl($url)->get()->first();
         if (empty($subscribe)) {

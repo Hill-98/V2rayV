@@ -5,13 +5,14 @@ namespace App\V2rayV\Validation;
 class Setting extends Validation
 {
     protected $configKeys = [
-        "main_port" => "int",
-        "main_http_port" => "int",
-        "allow_lan" => "bool",
-        "log_level" => "string",
-        "auto_update_v2ray" => "bool",
-        "update_v2ray_proxy" => "bool",
-        "auto_start" => "bool"
+        'main_server' => 'int',
+        'main_port' => 'int',
+        'main_http_port' => 'int',
+        'allow_lan' => 'bool',
+        'log_level' => 'string',
+        'auto_update_v2ray' => 'bool',
+        'update_v2ray_proxy' => 'bool',
+        'auto_start' => 'bool'
     ];
 
     /**
@@ -39,35 +40,21 @@ class Setting extends Validation
         return $this->validPort($value);
     }
 
-    protected function isAllowLan()
-    {
-        return true;
-    }
-
-    protected function isLogLevel(string $value)
+    /**
+     * 检查 V2ray 日志等级
+     *
+     * @param string $value
+     * @return bool
+     */
+    protected function isLogLevel(string $value): bool
     {
         $list = [
-            "debug",
-            "info",
-            "warning",
-            "error",
-            "none"
+            'debug',
+            'info',
+            'warning',
+            'error',
+            'none'
         ];
-        return in_array($value, $list);
-    }
-
-    protected function isAutoUpdateV2ray()
-    {
-        return true;
-    }
-
-    protected function isUpdateV2rayProxy()
-    {
-        return true;
-    }
-
-    protected function isAutoStart()
-    {
-        return true;
+        return in_array($value, $list, true);
     }
 }

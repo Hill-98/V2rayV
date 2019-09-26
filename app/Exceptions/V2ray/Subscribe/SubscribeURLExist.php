@@ -8,8 +8,8 @@ use Throwable;
 
 class SubscribeURLExist extends Exception
 {
-    public function __construct($message = "Subscribe url already exists.", $code = ErrorCode::SUBSCRIBE_URL_EXIST, Throwable $previous = null)
+    public function __construct($message = 'Subscribe url already exists.', $code = ErrorCode::SUBSCRIBE_URL_EXIST)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code, null);
     }
 }

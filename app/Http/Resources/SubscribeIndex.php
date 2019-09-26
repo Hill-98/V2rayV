@@ -16,15 +16,15 @@ class SubscribeIndex extends ResourceCommon
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
-            "id" => $this->id,
-            "name" => $this->name,
-            "is_encrypt" => !empty($this->password),
-            "server_count" => $this->servers()->count(),
-            "last_success" => $this->last_success,
-            "update_at" => $this->update_at === null ? null : $this->update_at->timestamp
+            'id' => $this->id,
+            'name' => $this->name,
+            'is_encrypt' => !empty($this->password),
+            'server_count' => $this->servers()->count(),
+            'last_success' => $this->last_success,
+            'update_at' => $this->update_at === null ? null : $this->update_at->timestamp
         ];
     }
 }

@@ -7,8 +7,8 @@ use Throwable;
 
 class ServerLocalPortExist extends \Exception
 {
-    public function __construct($message = "Local port already exists.", $code = ErrorCode::V2RAY_LOCAL_PORT_EXIST, Throwable $previous = null)
+    public function __construct($message = 'Local port already exists.', $code = ErrorCode::V2RAY_LOCAL_PORT_EXIST)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code, null);
     }
 }

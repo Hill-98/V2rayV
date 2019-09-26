@@ -10,20 +10,31 @@ abstract class Base
 {
     protected $path;
 
+    /**
+     * @param bool $real
+     * @return string
+     */
     public function getPath(bool $real = false): string
     {
         return Path::resolve($this->path, $real);
     }
 
+    /**
+     * @return string
+     */
     public function readFile(): string
     {
         try {
             return Storage::get($this->path);
         } catch (FileNotFoundException $e) {
-            return "";
+            return '';
         }
     }
 
+    /**
+     * @param string $data
+     * @return bool
+     */
     public function writeFile(string $data): bool
     {
         return Storage::put($this->path, $data);

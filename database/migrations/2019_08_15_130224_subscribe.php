@@ -11,18 +11,18 @@ class Subscribe extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create("subscribe", function (Blueprint $table) {
-            $table->bigIncrements("id");
-            $table->text("name");
-            $table->text("url");
-            $table->text("mux");
-            $table->text("password")->nullable(true);
-            $table->boolean("auto_update");
-            $table->boolean("proxy_update");
-            $table->boolean("last_success");
-            $table->dateTime("update_at")->nullable(true);
+        Schema::create('subscribe', static function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->text('name');
+            $table->text('url');
+            $table->text('mux');
+            $table->text('password')->nullable();
+            $table->boolean('auto_update');
+            $table->boolean('proxy_update');
+            $table->boolean('last_success');
+            $table->dateTime('update_at')->nullable();
         });
     }
 
@@ -31,7 +31,7 @@ class Subscribe extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
     }
 }

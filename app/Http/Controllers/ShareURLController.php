@@ -20,23 +20,32 @@ class ShareURLController extends Controller
         $this->shareURL = $shareURL;
     }
 
-    public function export(Request $request)
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
-            "servers" => "required",
-            "encrypt" => "boolean"
+            'servers' => 'required',
+            'encrypt' => 'boolean'
         ]);
-        $servers = explode(",", $request->input("servers"));
+        $servers = explode(',', $request->input('servers'));
         foreach ($servers as &$server) {
-            $server = intval(trim($server));
+            $server = (int)trim($server);
         }
-        $data = $this->shareURL->export($servers, boolval($request->input("encrypt")));
-        return Response::result(true, 0, "", $data);
+        unset($server);
+        $data = $this->shareURL->export($servers, (bool)$request->input('encrypt'));
+        return Response::result(true, 0, '', $data);
     }
 
-    public function import(Request $request)
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function import(Request $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->post();
-        return Response::result(true, 0, "", $this->shareURL->import($data, $request->input("password", "")));
+        return Response::result(true, 0, '', $this->shareURL->import($data, $request->input("password", "")));
     }
 }

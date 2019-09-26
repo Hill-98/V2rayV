@@ -11,9 +11,9 @@ class CreateJobsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('jobs', function (Blueprint $table) {
+        Schema::create('jobs', static function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('queue')->index();
             $table->longText('payload');
@@ -29,7 +29,7 @@ class CreateJobsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
     }
 }

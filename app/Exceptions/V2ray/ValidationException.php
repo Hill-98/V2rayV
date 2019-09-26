@@ -9,7 +9,13 @@ class ValidationException extends \Exception
     private $key;
     private $status;
 
-    public function __construct($key = "", $status = "", $message = "")
+    /**
+     * ValidationException constructor.
+     * @param string $key 校验异常键
+     * @param string $status 校验失败状态
+     * @param string $message
+     */
+    public function __construct($key = '', $status = '', $message = '')
     {
         $this->key = $key;
         $this->status = $status;

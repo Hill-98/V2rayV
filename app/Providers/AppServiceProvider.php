@@ -14,12 +14,12 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-        if (!$this->app->environment("production")) {
+        if (!$this->app->environment('production')) {
             $this->app->register(IdeHelperServiceProvider::class);
         }
-        $this->app->bind(\App\Models\DataFilter::class, function (Container $app) {
+        $this->app->bind(\App\Models\DataFilter::class, static function (Container $app) {
             $model = $app->make(\App\Helper\Router::class)->getFilter($app->make(\Illuminate\Http\Request::class));
             return $model;
         });
@@ -30,14 +30,15 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
-        Response::macro("result", function (bool $success, $code = 0, string $message = "", $data = null) {
-            return Response::json([
-                "success" => $success,
-                "code" => $code,
-                "message" => $message,
-                "data" => $data
+        Response::macro('result', function (bool $success, $code = 0, string $message = '', $data = null) {
+            /** @var \Illuminate\Routing\ResponseFactory $this */
+            return $this->json([
+                'success' => $success,
+                'code' => $code,
+                'message' => $message,
+                'data' => $data
             ]);
         });
     }

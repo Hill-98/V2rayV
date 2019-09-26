@@ -7,8 +7,8 @@ use Throwable;
 
 class NotExist extends \Exception
 {
-    public function __construct($message = "Not Exist.", $code = ErrorCode::NOT_EXIST, Throwable $previous = null)
+    public function __construct($message = 'Not Exist.', $code = ErrorCode::NOT_EXIST)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code, null);
     }
 }

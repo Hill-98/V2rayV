@@ -10,48 +10,46 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class Subscribe extends TestCase
 {
-    public function testStore()
+    public function testStore(): void
     {
         $data = factory(SubscribeModel::class)->make()->toArray();
-        $response = $this->postJson("/api/subscribe/", $data);
+        $response = $this->postJson('/api/subscribe/', $data);
         $response->assertOk();
         $response->assertJson([
-            "success" => true
+            'success' => true
         ]);
-        $this->assertDatabaseHas("subscribe", array_map(function ($value) {
+        $this->assertDatabaseHas('subscribe', array_map(static function ($value) {
             if (is_array($value)) {
                 return json_encode($value);
-            } else {
-                return $value;
             }
+            return $value;
         }, $data));
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $data = factory(SubscribeModel::class)->make()->toArray();
-        $response = $this->putJson("/api/subscribe/" . (SubscribeModel::pluck("id")->random()), $data);
+        $response = $this->putJson('/api/subscribe/' . SubscribeModel::pluck('id')->random(), $data);
         $response->assertOk();
         $response->assertJson([
-            "success" => true
+            'success' => true
         ]);
-        $this->assertDatabaseHas("subscribe", array_map(function ($value) {
+        $this->assertDatabaseHas('subscribe', array_map(static function ($value) {
             if (is_array($value)) {
                 return json_encode($value);
-            } else {
-                return $value;
             }
+            return $value;
         }, $data));
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
-        $response = $this->delete("/api/subscribe/" . (SubscribeModel::pluck("id")->random()));
+        $response = $this->delete('/api/subscribe/' . SubscribeModel::pluck('id')->random());
         $response->assertJson([
-            "success" => true
+            'success' => true
         ]);
-        $this->assertDatabaseMissing("subscribe", [
-            "id" => $response->json()["data"]["id"]
+        $this->assertDatabaseMissing('subscribe', [
+            'id' => $response->json()['data']['id']
         ]);
     }
 }

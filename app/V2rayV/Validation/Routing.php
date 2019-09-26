@@ -9,13 +9,13 @@ use App\V2rayV\Server;
 class Routing extends Validation
 {
     protected $configKeys = [
-        "proxy" => "array",
-        "direct" => "array",
-        "block" => "array",
-        "port" => "string",
-        "network" => "string",
-        "protocol" => "array",
-        "servers" => "array"
+        'proxy' => 'array',
+        'direct' => 'array',
+        'block' => 'array',
+        'port' => 'string',
+        'network' => 'string',
+        'protocol' => 'array',
+        'servers' => 'array'
     ];
 
     /**
@@ -73,19 +73,19 @@ class Routing extends Validation
      * @param string $config
      * @return bool
      */
-    protected function isPort(string $config)
+    protected function isPort(string $config): bool
     {
         if (empty(trim($config))) {
             return true;
         }
-        $portList = explode(",", $config);
+        $portList = explode(',', $config);
         foreach ($portList as $value) {
-            $arr = explode("-", $value);
+            $arr = explode('-', $value);
             if (count($arr) > 2) {
                 return false;
             }
             foreach ($arr as $port) {
-                $port = intval($port);
+                $port = (int)$port;
                 if (!$this->validPort($port)) {
                     return false;
                 }
@@ -103,11 +103,11 @@ class Routing extends Validation
     protected function isNetwork(string $value): bool
     {
         $list = [
-            "tcp",
-            "udp",
-            "tcp,udp"
+            'tcp',
+            'udp',
+            'tcp,udp'
         ];
-        return in_array($value, $list);
+        return in_array($value, $list, true);
     }
 
     /**
@@ -119,12 +119,12 @@ class Routing extends Validation
     protected function isProtocol(array $config): bool
     {
         $list = [
-            "http",
-            "tls",
-            "bittorrent"
+            'http',
+            'tls',
+            'bittorrent'
         ];
         foreach ($config as $value) {
-            if (!in_array($value, $list)) {
+            if (!in_array($value, $list, true)) {
                 return false;
             }
         }
@@ -139,7 +139,7 @@ class Routing extends Validation
      */
     protected function isServers(array $config): bool
     {
-        if (!empty($config[0]) && $config[0] === "all") {
+        if (!empty($config[0]) && $config[0] === 'all') {
             return true;
         }
         $server = app(Server::class);

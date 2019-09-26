@@ -13,24 +13,24 @@ class Routing extends Data
 {
     use switchEnable;
     protected $dataCol = [
-        "name",
-        "proxy",
-        "direct",
-        "block",
-        "port",
-        "network",
-        "protocol",
-        "servers",
-        "enable"
+        'name',
+        'proxy',
+        'direct',
+        'block',
+        'port',
+        'network',
+        'protocol',
+        'servers',
+        'enable'
     ];
     protected $filterRule = [
-        "enable" => [
-            "col" => "enable",
-            "value" => 1
+        'enable' => [
+            'col' => 'enable',
+            'value' => 1
         ],
-        "disable" => [
-            "col" => "enable",
-            "value" => 0
+        'disable' => [
+            'col' => 'enable',
+            'value' => 0
         ]
     ];
     /** @var Model  */
@@ -46,10 +46,10 @@ class Routing extends Data
      */
     protected function save(array $data, \Illuminate\Database\Eloquent\Model $model = null): int
     {
-        if (empty(trim($data["name"] ?? ""))) {
-            $data["name"] = "Routing rule - " . ($this->model::count() + 1);
+        if (empty(trim($data['name'] ?? ''))) {
+            $data['name'] = 'Routing rule - ' . ($this->model::count() + 1);
         }
-        $data["enable"] = !empty($data["enable"]);
+        $data['enable'] = !empty($data['enable']);
         return parent::save($data, $model);
     }
 }

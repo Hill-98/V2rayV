@@ -9,58 +9,57 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class Routing extends TestCase
 {
-    public function testStore()
+    public function testStore(): void
     {
         $data = factory(RoutingModel::class)->make()->toArray();
-        $response = $this->postJson("/api/routing/", $data);
+        $response = $this->postJson('/api/routing/', $data);
         $response->assertOk();
         $response->assertJson([
-            "success" => true
+            'success' => true
         ]);
-        $this->assertDatabaseHas("routing", array_map(function ($value) {
+        $this->assertDatabaseHas('routing', array_map(static function ($value) {
             if (is_array($value)) {
                 return json_encode($value);
-            } else {
-                return $value;
             }
+            return $value;
         }, $data));
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $data = factory(RoutingModel::class)->make()->toArray();
-        $response = $this->putJson("/api/routing/" . RoutingModel::pluck("id")->random(), $data);
+        $response = $this->putJson('/api/routing/' . RoutingModel::pluck('id')->random(), $data);
         $response->assertOk();
         $response->assertJson([
-            "success" => true
+            'success' => true
         ]);
-        $this->assertDatabaseHas("routing", array_map(function ($value) {
+        $this->assertDatabaseHas('routing', array_map(static function ($value) {
             if (is_array($value)) {
                 return json_encode($value);
-            } else {
-                return $value;
             }
+            return $value;
         }, $data));
     }
 
-    public function testUpdateDefault()
+    public function testUpdateDefault(): void
     {
-        $response = $this->putJson("/api/routing/default", $this->genData());
+        $data = factory(RoutingModel::class)->make()->toArray();
+        $response = $this->putJson('/api/routing/default', $data);
         $response->assertOk();
         $response->assertJson([
-            "success" => true
+            'success' => true
         ]);
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
-        $response = $this->delete("/api/routing/" . RoutingModel::pluck("id")->random());
+        $response = $this->delete('/api/routing/' . RoutingModel::pluck('id')->random());
         $response->assertOk();
         $response->assertJson([
-            "success" => true
+            'success' => true
         ]);
-        $this->assertDatabaseMissing("routing", [
-            "id" => $response->json()["data"]["id"]
+        $this->assertDatabaseMissing('routing', [
+            'id' => $response->json()['data']['id']
         ]);
     }
 }

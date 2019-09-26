@@ -23,11 +23,11 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middlewareGroups = [
-        "web" => [
+        'web' => [
         ],
-        "api" => [
-            "ApiAuth",
-            "V2rayControl"
+        'api' => [
+            'ApiAuth',
+            'V2rayControl'
         ],
     ];
 
@@ -39,8 +39,8 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        "ApiAuth" => \App\Http\Middleware\ApiAuthenticate::class,
-        "V2rayControl" => \App\Http\Middleware\V2rayControl::class
+        'ApiAuth' => \App\Http\Middleware\ApiAuthenticate::class,
+        'V2rayControl' => \App\Http\Middleware\V2rayControl::class
     ];
 
     /**

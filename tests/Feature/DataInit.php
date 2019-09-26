@@ -2,17 +2,16 @@
 
 namespace Tests\Feature;
 
-use App\Exceptions\V2ray\DataSaveFail;
-use App\Exceptions\V2ray\ValidationException;
 use App\V2rayV\Server;
 use App\Models\Server as ServerModel;
+use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class DataInit extends TestCase
 {
-    public function testData()
+    public function testData(): void
     {
         try {
             $server = $this->app->make(Server::class);
@@ -23,8 +22,8 @@ class DataInit extends TestCase
             try {
                 $id = $server->add(factory(ServerModel::class)->make()->toArray());
                 $this->assertEquals($id !== 0, true);
-            } catch (DataSaveFail $e) {
-            } catch (ValidationException $e) {
+            } catch (Exception $e) {
+                $this->addWarning($e->getMessage());
             }
         }
     }

@@ -19,7 +19,7 @@ class Subscribe extends ResourceCommon
     public function toArray($request)
     {
         $result = parent::toArray($request);
-        $result["update_at"] = $this->update_at->timestamp;
+        $result['update_at'] = $this->update_at->timestamp;
         return $result;
     }
 }

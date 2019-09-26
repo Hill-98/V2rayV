@@ -1,9 +1,9 @@
 <?php
 return [
-    "log" => [
-        "access" => "",
-        "error" => "",
-        "loglevel" => ""
+    'log' => [
+        'access' => '',
+        'error' => '',
+        'loglevel' => ''
     ],
 //    "api" => [
 //        "tag" => "api",
@@ -11,14 +11,14 @@ return [
 //            "StatsService"
 //        ]
 //    ],
-    "dns" => [
-        "hosts" => (object)[],
-        "servers" => [],
-        "tag" => "dns"
+    'dns' => [
+        'hosts' => (object)[],
+        'servers' => [],
+        'tag' => 'dns'
     ],
-    "routing" => [
-        "domainStrategy" => "IPOnDemand",
-        "rules" => [
+    'routing' => [
+        'domainStrategy' => 'IPOnDemand',
+        'rules' => [
             // API 路由规则
 //            [
 //                "type" => "field",
@@ -43,7 +43,7 @@ return [
 //            "statsInboundDownlink" => true
 //        ]
 //    ],
-    "inbounds" => [
+    'inbounds' => [
         // API 入站连接
 //        [
 //            "port" => 45335,
@@ -55,14 +55,14 @@ return [
 //            "tag" => "api"
 //        ]
     ],
-    "outbounds" => [
+    'outbounds' => [
         [
-            "protocol" => "freedom",
-            "tag" => "direct"
+            'protocol' => 'freedom',
+            'tag' => 'direct'
         ],
         [
-            "protocol" => "blackhole",
-            "tag" => "block"
+            'protocol' => 'blackhole',
+            'tag' => 'block'
         ]
     ],
 //    "transport" => (object)[],

@@ -13,14 +13,14 @@ use Illuminate\Support\Str;
 class ShareURL
 {
     private $serverModel;
-    private $v2raynHelper;
+    private $v2rayNHelper;
 
-    private $encrypt_method = "aes-256-ctr";
+    private $encrypt_method = 'aes-256-ctr';
 
     public function __construct(Server $server, V2rayNShareURL $v2ray_n_helper)
     {
         $this->serverModel = $server;
-        $this->v2raynHelper = $v2ray_n_helper;
+        $this->v2rayNHelper = $v2ray_n_helper;
     }
 
     /**
@@ -31,78 +31,77 @@ class ShareURL
      * @param int $subscribe_id
      * @return array
      */
-    public function import(array $urls, string $password = "", int $subscribe_id = 0): array
+    public function import(array $urls, string $password = '', int $subscribe_id = 0): array
     {
         $result = [
-            "total" => count($urls),
-            "new" => 0,
-            "fail" => 0,
-            "servers" => []
+            'total' => count($urls),
+            'new' => 0,
+            'fail' => 0,
+            'servers' => []
         ];
         foreach ($urls as $url) {
-            if (empty($url) || empty(trim($url))) {
-                $result["total"] --;
+            if (!is_string($url) || empty(trim($url))) {
+                $result['total']--;
                 continue;
             }
             // 判断是否是 URL 格式，如果不是，则可能是加密 URL。
-            if (Str::is("*://*", $url)) {
-                if (Str::startsWith($url, "vvv://")) {
-                    $serverConfig = json_decode(base64_decode(Str::after($url, "vvv://")), true);
+            if (Str::is('*://*', $url)) {
+                if (Str::startsWith($url, 'vvv://')) {
+                    $serverConfig = json_decode(base64_decode(Str::after($url, 'vvv://')), true);
                 } else {
                     try {
-                        $serverConfig = $this->v2raynHelper->decode($url);
+                        $serverConfig = $this->v2rayNHelper->decode($url);
                     } catch (ResolveException $e) {
-                        $result["fail"]++;
+                        $result['fail']++;
                         continue;
                     }
                 }
             } else {
                 // 解密数据
-                $data = explode("::", base64_decode($url)); // 分割密文和 IV
+                $data = explode('::', base64_decode($url)); // 分割密文和 IV
                 if (empty($password) || count($data) !== 2) {
-                    $result["fail"]++;
+                    $result['fail']++;
                     continue;
-                };
-                $encryptData = $data[0];
-                $iv = $data[1];
+                }
+                [$encryptData, $iv] = $data;
                 $serverConfig = openssl_decrypt($encryptData, $this->encrypt_method, $password, OPENSSL_RAW_DATA, $iv);
                 $serverConfig = json_decode($serverConfig, true);
             }
             if (!$serverConfig) {
-                $result["fail"]++;
+                $result['fail']++;
                 continue;
             }
             // 验证解码后的数据是否正确
             try {
                 $this->serverModel->valid($serverConfig);
             } catch (ValidationException $e) {
-                $result["fail"]++;
+                $result['fail']++;
                 continue;
             }
             if (empty($subscribe_id)) {
-                if (isset($serverConfig["subscribe_id"])) {
-                    unset($serverConfig["subscribe_id"]);
+                if (isset($serverConfig['subscribe_id'])) {
+                    unset($serverConfig['subscribe_id']);
                 }
             } else {
-                $serverConfig["subscribe_id"] = $subscribe_id;
+                $serverConfig['subscribe_id'] = $subscribe_id;
             }
             $list = $this->serverModel->list(
                 false,
-                ["address", "port"],
-                ["address" => $serverConfig["address"], "port" => intval($serverConfig["port"])]
+                ['address', 'port'],
+                ['address' => $serverConfig['address'], 'port' => (int)$serverConfig['port']]
             );
             try {
                 // 是否是已存在服务器
                 if ($list->isEmpty()) {
                     $serverId = $this->serverModel->add($serverConfig);
-                    $result["new"]++;
+                    $result['new']++;
                 } else {
                     $serverId = $list->first()->id;
                     $this->serverModel->update($serverConfig, $serverId);
                 }
-                $result["servers"][] = $serverId;
+                $result['servers'][] = $serverId;
             } catch (\Exception $e) {
-                $result["fail"]++;
+                $result['fail']++;
             }
         }
         return $result;
@@ -117,14 +116,14 @@ class ShareURL
      */
     public function export(array $serverId, bool $encrypt = false): array
     {
-        $password = "";
+        $password = '';
         $result = [
-            "vvv" => [],
-            "V2rayN" => [],
+            'vvv' => [],
+            'V2rayN' => [],
         ];
         if ($encrypt) {
             $password = Str::random();
-            $result["password"] = $password;
+            $result['password'] = $password;
         }
         foreach ($serverId as $id) {
             if (!is_int($id)) {
@@ -135,14 +134,14 @@ class ShareURL
                 $server = $this->serverModel->get($id);
                 $url = $this->encode($server, !$encrypt);
                 if ($encrypt) {
-                    $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->encrypt_method));
+                    $iv = random_bytes(openssl_cipher_iv_length($this->encrypt_method));
                     $url = openssl_encrypt($url, $this->encrypt_method, $password, OPENSSL_RAW_DATA, $iv);
                     $url = base64_encode($url . "::$iv");
                 }
-                $result["vvv"][] = $url;
-                $url = $this->v2raynHelper->encode($server);
-                $result["V2rayN"][] = $url;
-            } catch (NotExist $e) {
+                $result['vvv'][] = $url;
+                $url = $this->v2rayNHelper->encode($server);
+                $result['V2rayN'][] = $url;
+            } catch (\Exception $e) {
             }
         }
         return $result;
@@ -156,15 +155,12 @@ class ShareURL
      */
     private function encode(ServerModel $server, bool $base64): string
     {
-        $server = $server->toArray();
-        unset($server["id"]);
-        unset($server["subscribe_id"]);
-        unset($server["local_port"]);
-        unset($server["enable"]);
-        $data = json_encode($server);
+        $arr = $server->toArray();
+        unset($arr['id'], $arr['subscribe_id'], $arr['local_port'], $arr['enable']);
+        $data = json_encode($arr);
         $result = $data;
         if ($base64) {
-            $result = "vvv://" . base64_encode($data);
+            $result = 'vvv://' . base64_encode($data);
         }
         return $result;
     }

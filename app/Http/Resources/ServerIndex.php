@@ -16,18 +16,18 @@ class ServerIndex extends ResourceCommon
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
-            "id" => $this->id,
-            "name" => $this->name,
-            "address" => $this->address,
-            "port" => $this->port,
-            "local_port" => $this->local_port,
-            "protocol" => $this->protocol,
-            "enable" => $this->enable,
-            "subscribe" => [
-                "name" => $this->subscribe->name ?? "",
+            'id' => $this->id,
+            'name' => $this->name,
+            'address' => $this->address,
+            'port' => $this->port,
+            'local_port' => $this->local_port,
+            'protocol' => $this->protocol,
+            'enable' => $this->enable,
+            'subscribe' => [
+                'name' => $this->subscribe->name ?? '',
             ],
         ];
     }

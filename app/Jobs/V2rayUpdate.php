@@ -40,29 +40,29 @@ class V2rayUpdate implements ShouldQueue
      * @param Setting $setting
      * @return void
      */
-    public function handle(Network $network, Setting $setting)
+    public function handle(Network $network, Setting $setting): void
     {
         $client = new GuzzleHttpClient([
-            "proxy" => $network->getProxyUrl($setting->update_v2ray_proxy)
+            'proxy' => $network->getProxyUrl($setting->update_v2ray_proxy)
         ]);
         try {
-            $zip_path = Storage::path("v2ray.zip");
-            $zip_file = fopen($zip_path, "w");
+            $zip_path = Storage::path('V2rayCore.zip');
+            $zip_file = fopen($zip_path, 'wb');
             $client->get($this->download_url, [
-                "save_to" => $zip_file
+                'save_to' => $zip_file
             ]);
             $zip = new ZipArchive();
             if ($zip->open($zip_path, ZIPARCHIVE::CHECKCONS) === true) {
-                V2rayControl::dispatchNow("", V2ray::STOP);
+                V2rayControl::dispatchNow('', V2ray::STOP);
                 sleep(1);
-                $v2ray_dir = Storage::path("v2ray");
-                if (Storage::exists("v2ray")) {
-                    Storage::deleteDirectory("v2ray");
+                $v2ray_dir = Storage::path('v2ray');
+                if (Storage::exists('v2ray')) {
+                    Storage::deleteDirectory('v2ray');
                 }
-                Storage::makeDirectory("v2ray");
+                Storage::makeDirectory('v2ray');
                 $zip->extractTo($v2ray_dir);
                 $zip->close();
-                event("V2rayControl");
+                event('V2rayControl');
             }
             unlink($zip_path);
         } catch (RequestException $e) {

@@ -34,31 +34,40 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Subscribe extends Model
 {
-    protected $table = "subscribe";
+    protected $table = 'subscribe';
+
     protected $attributes = [
-        "last_success" => false,
+        'last_success' => false,
     ];
+
     public $timestamps = false;
 
     protected $casts = [
-        "auto_update" => "bool",
-        "proxy_update" => "bool",
-        "mux" => "array"
+        'auto_update' => 'bool',
+        'proxy_update' => 'bool',
+        'mux' => 'array'
     ];
 
     protected $dates = [
-        "update_at"
+        'update_at'
     ];
 
-    public function servers()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function servers(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Server::class);
     }
 
+    /**
+     * @param $value
+     * @return bool|null
+     */
     public function getLastSuccessAttribute($value)
     {
         if ($value !== null) {
-            $value = boolval($value);
+            $value = (bool)$value;
         }
         return $value;
     }

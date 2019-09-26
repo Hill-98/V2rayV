@@ -17,13 +17,13 @@ class Protocol
         /** @var array $protocolSetting */
         $protocolSetting = $config->protocol_setting;
         $setting = [
-            "servers" => [
+            'servers' => [
                 [
-                    "address" => $config->address,
-                    "port" => $config->port,
-                    "method" => $protocolSetting["method"],
-                    "password" => $protocolSetting["password"],
-                    "ota" => $protocolSetting["ota"],
+                    'address' => $config->address,
+                    'port' => $config->port,
+                    'method' => $protocolSetting['method'],
+                    'password' => $protocolSetting['password'],
+                    'ota' => $protocolSetting['ota'],
                 ]
             ]
         ];
@@ -41,15 +41,15 @@ class Protocol
         /** @var array $protocolSetting */
         $protocolPetting = $config->protocol_setting;
         $setting = [
-            "servers" => [
+            'servers' => [
                 [
-                    "address" => $config->address,
-                    "port" => $config->port,
+                    'address' => $config->address,
+                    'port' => $config->port,
                 ]
             ]
         ];
-        if (!empty($protocolPetting["user"]) && !empty($protocolPetting["pass"])) {
-            $setting["users"] = [$protocolPetting];
+        if (!empty($protocolPetting['user']) && !empty($protocolPetting['pass'])) {
+            $setting['users'] = [$protocolPetting];
         }
         return $setting;
     }
@@ -65,11 +65,11 @@ class Protocol
         /** @var array $protocolSetting */
         $protocolSetting = $config->protocol_setting;
         $setting = [
-            "vnext" => [
+            'vnext' => [
                 [
-                    "address" => $config->address,
-                    "port" => $config->port,
-                    "users" => [
+                    'address' => $config->address,
+                    'port' => $config->port,
+                    'users' => [
                         $protocolSetting,
                     ]
                 ]
@@ -89,10 +89,10 @@ class Protocol
         /** @var array $protocolSetting */
         $protocolSetting = $config->protocol_setting;
         $setting = [
-            "method" => $protocolSetting["method"],
-            "password" => $protocolSetting["password"],
-            "ota" => $protocolSetting["ota"],
-            "network" => "tcp,udp"
+            'method' => $protocolSetting['method'],
+            'password' => $protocolSetting['password'],
+            'ota' => $protocolSetting['ota'],
+            'network' => 'tcp,udp'
         ];
         return $setting;
     }
@@ -108,12 +108,12 @@ class Protocol
         /** @var array $protocolSetting */
         $protocolSetting = $config->protocol_setting;
         $setting = [
-            "auth" => "noauth",
-            "udp" => true,
+            'auth' => 'noauth',
+            'udp' => true,
         ];
-        if (!empty($protocolSetting["user"]) && !empty($protocolSetting["pass"])) {
-            $setting["auth"] = "password";
-            $setting["accounts"] = [$protocolSetting];
+        if (!empty($protocolSetting['user']) && !empty($protocolSetting['pass'])) {
+            $setting['auth'] = 'password';
+            $setting['accounts'] = [$protocolSetting];
         }
         return $setting;
     }
@@ -128,9 +128,8 @@ class Protocol
     {
         /** @var array $protocolSetting */
         $protocolSetting = $config->protocol_setting;
-        $setting = [
-            "clients" => [$protocolSetting],
+        return [
+            'clients' => [$protocolSetting],
         ];
-        return $setting;
     }
 }

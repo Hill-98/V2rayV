@@ -65,9 +65,8 @@ abstract class Data
         }
         if ($pagination) {
             return $model->paginate($prePage);
-        } else {
-            return $model->get();
         }
+        return $model->get();
     }
 
     /**

@@ -14,48 +14,40 @@ class VStart extends Command
      *
      * @var string
      */
-    protected $signature = "vvv:start {--port}";
+    protected $signature = 'vvv:start {--port}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = "Start V2rayV";
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+    protected $description = 'Start V2rayV';
 
     /**
      * Execute the console command.
      *
      * @param Setting $setting
+     * @param V2ray $v2ray
+     * @return mixed
      */
     public function handle(Setting $setting, V2ray $v2ray)
     {
-        $database = database_path("database.sqlite");
+        $database = database_path('database.sqlite');
         if (!file_exists($database)) {
             copy("${database}.example", $database);
-            $this->call("migrate", [
-                "--force" => true
+            $this->call('migrate', [
+                '--force' => true
             ]);
         }
-        $this->line("Ready");
-        if ($setting->auto_update_v2ray || file_exists(storage_path("app/v2ray/v2ray.exe"))) {
-            dispatch(function () use ($v2ray) {
+        $this->line('Ready');
+        if ($setting->auto_update_v2ray || file_exists(storage_path('app/v2ray/v2ray.exe'))) {
+            dispatch(static function () use ($v2ray) {
                 $v2ray->checkUpdate();
             });
         }
         SubscribeUpdate::dispatch();
-        $this->call("serve", [
-            "--port" => $this->input->getOption("port") ?: 8246
+        $this->call('serve', [
+            '--port' => $this->input->getOption('port') ?: 8246
         ]);
     }
 }

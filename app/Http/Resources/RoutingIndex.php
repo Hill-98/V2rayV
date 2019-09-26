@@ -16,15 +16,15 @@ class RoutingIndex extends ResourceCommon
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
-            "id" => $this->id,
-            "name" => $this->name,
-            "port" => $this->port,
-            "network" => $this->network,
-            "protocol" => $this->protocol,
-            "enable" => $this->enable,
+            'id' => $this->id,
+            'name' => $this->name,
+            'port' => $this->port,
+            'network' => $this->network,
+            'protocol' => $this->protocol,
+            'enable' => $this->enable,
         ];
     }
 }

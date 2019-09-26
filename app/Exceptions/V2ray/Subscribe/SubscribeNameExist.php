@@ -8,8 +8,8 @@ use Throwable;
 
 class SubscribeNameExist extends Exception
 {
-    public function __construct($message = "Subscribe name already exists.", $code = ErrorCode::SUBSCRIBE_NAME_EXIST, Throwable $previous = null)
+    public function __construct($message = 'Subscribe name already exists.', $code = ErrorCode::SUBSCRIBE_NAME_EXIST)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code, null);
     }
 }

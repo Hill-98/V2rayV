@@ -14,24 +14,25 @@ abstract class Validation
     /**
      * @param array $config
      * @throws ValidationException
+     * @return void
      */
-    public function __invoke(array $config)
+    public function __invoke(array $config): void
     {
         foreach ($this->configKeys as $key => $value) {
             if (!isset($config[$key])) {
-                throw new ValidationException($key, "empty", "$key value cannot be empty");
+                throw new ValidationException($key, 'empty', "$key value cannot be empty");
             }
             $method = "is_${key}";
-            if (Str::endsWith($key, "_setting")) {
-                $type = Str::before($key, "_setting");
+            if (Str::endsWith($key, '_setting')) {
+                $type = Str::before($key, '_setting');
                 if (isset($config[$type])) {
                     $method = "is_${config[$type]}-${type}";
                 }
             }
             $method = Str::camel($method);
             if (!call_user_func("is_$value", $config[$key]) ||
-                !call_user_func_array([$this, $method], [$config[$key]])) {
-                throw new ValidationException($key, "invalid", "$key value invalid.");
+                (method_exists($this, $method) && !$this->$method($config[$key]))) {
+                throw new ValidationException($key, 'invalid', "$key value invalid.");
             }
         }
     }
@@ -45,26 +46,5 @@ abstract class Validation
     protected function validPort(int $value): bool
     {
         return ($value > 0 && $value <= 65535);
-    }
-
-    /**
-     * Mux 配置是否正确
-     *
-     * @param array $config
-     * @return bool
-     */
-    protected function isMux(array $config): bool
-    {
-        if (!isset($config["enabled"]) || !is_bool($config["enabled"])) {
-            return false;
-        }
-        if ($config["enabled"]) {
-            if (empty($config["concurrency"])) {
-                return false;
-            }
-            $concurrency = $config["concurrency"];
-            return (is_int($concurrency) && $concurrency >= 1 && $concurrency <= 1024);
-        }
-        return true;
     }
 }

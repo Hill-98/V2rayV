@@ -7,8 +7,8 @@ use Throwable;
 
 class DeleteFail extends \Exception
 {
-    public function __construct($message = "Delete fail.", $code = ErrorCode::DELETE_FAIL, Throwable $previous = null)
+    public function __construct($message = 'Delete fail.', $code = ErrorCode::DELETE_FAIL)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code, null);
     }
 }

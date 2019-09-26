@@ -5,10 +5,12 @@ namespace App\V2rayV\Validation;
 
 class Subscribe extends Validation
 {
+    use IsMux;
+
     protected $configKeys = [
-        "name" => "string",
-        "url" => "string",
-        "mux" => "array",
+        'name' => 'string',
+        'url' => 'string',
+        'mux' => 'array',
     ];
 
     /**
@@ -31,10 +33,5 @@ class Subscribe extends Validation
     protected function isUrl(string $value): bool
     {
         return filter_var($value, FILTER_VALIDATE_URL) === $value;
-    }
-
-    protected function isType(int $value)
-    {
-        return ($value === 1 || $value === 2);
     }
 }

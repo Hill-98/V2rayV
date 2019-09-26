@@ -33,7 +33,7 @@ class SubscribeController extends Controller
      *
      * @return ResourceCollection
      */
-    public function index()
+    public function index(): ResourceCollection
     {
         return new ResourceCollection($this->model->list(true, $this->filter->filter, $this->filter->filer_value));
     }
@@ -41,7 +41,7 @@ class SubscribeController extends Controller
     /**
      * @return ResourceCollection
      */
-    public function all()
+    public function all(): ResourceCollection
     {
         return new ResourceCollection($this->model->list(false, $this->filter->filter, $this->filter->filer_value));
     }
@@ -50,10 +50,10 @@ class SubscribeController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         return $this->save($request->post());
     }
@@ -63,7 +63,7 @@ class SubscribeController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return ResourceModel
+     * @return ResourceModel|\Illuminate\Http\JsonResponse
      */
     public function show(Request $request, $id)
     {
@@ -77,11 +77,11 @@ class SubscribeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): \Illuminate\Http\JsonResponse
     {
         return $this->save($request->post(), $id);
     }
@@ -89,13 +89,13 @@ class SubscribeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  int $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy($id): \Illuminate\Http\JsonResponse
     {
         try {
-            return Response::result(true, 0, "", ["id" => $this->model->delete($id)]);
+            return Response::result(true, 0, '', ['id' => $this->model->delete($id)]);
         } catch (\Exception $e) {
             return Response::result(false, $e->getCode(), $e->getMessage());
         }
@@ -103,23 +103,23 @@ class SubscribeController extends Controller
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function subscribeUpdate(Request $request)
+    public function subscribeUpdate(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
-            "id" => "required|numeric",
+            'id' => 'required|numeric',
         ]);
-        SubscribeUpdate::dispatch(intval($request->input("id")));
+        SubscribeUpdate::dispatch((int)$request->input('id'));
         return Response::result(true, 0);
     }
 
     /**
      * @param array $config
      * @param int $id
-     * @return mixed
+     * @return \Illuminate\Http\JsonResponse
      */
-    private function save(array $config, int $id = 0)
+    private function save(array $config, int $id = 0): \Illuminate\Http\JsonResponse
     {
         try {
             if (empty($id)) {
@@ -127,13 +127,13 @@ class SubscribeController extends Controller
             } else {
                 $result_id = $this->model->update($config, $id);
             }
-            return Response::result(true, $code ?? 0, $msg ?? "", ["id" => $result_id]);
+            return Response::result(true, $code ?? 0, $msg ?? '', ['id' => $result_id]);
         } catch (ValidationException $e) {
             return Response::result(
                 false,
                 $e->getCode(),
                 $e->getMessage(),
-                ["key" => $e->getKey(), "status" => $e->getStatus()]
+                ['key' => $e->getKey(), 'status' => $e->getStatus()]
             );
         } catch (\Exception $e) {
             return Response::result(false, $e->getCode(), $e->getMessage());

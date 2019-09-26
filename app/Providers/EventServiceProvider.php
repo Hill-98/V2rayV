@@ -28,13 +28,13 @@ class EventServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         parent::boot();
-        Event::listen("V2rayControl", function () {
-            $token = strval(rand(10000, 999999));
-            Cache::put("V2rayControl", $token);
-            \App\Jobs\V2rayControl::dispatch($token)->delay(3)->onQueue("high");
+        Event::listen('V2rayControl', static function () {
+            $token = (string)random_int(10000, 999999);
+            Cache::put('V2rayControl', $token);
+            \App\Jobs\V2rayControl::dispatch($token)->delay(3)->onQueue('high');
         });
     }
 }

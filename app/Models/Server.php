@@ -46,25 +46,28 @@ class Server extends Model
     public $timestamps = false;
 
     protected $attributes = [
-        "subscribe_id" => 0,
-        "local_port" => 0
+        'subscribe_id' => 0,
+        'local_port' => 0
     ];
 
     protected $guarded = [];
 
     protected $casts = [
-        "subscribe_id" => "int",
-        "port" => "int",
-        "local_port" => "int",
-        "protocol_setting" => "array",
-        "network_setting" => "array",
-        "security_setting" => "array",
-        "mux" => "array",
-        "enable" => "bool"
+        'subscribe_id' => 'int',
+        'port' => 'int',
+        'local_port' => 'int',
+        'protocol_setting' => 'array',
+        'network_setting' => 'array',
+        'security_setting' => 'array',
+        'mux' => 'array',
+        'enable' => 'bool'
     ];
 
-    public function subscribe()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function subscribe(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasOne(Subscribe::class, "id", "subscribe_id");
+        return $this->hasOne(Subscribe::class, 'id', 'subscribe_id');
     }
 }

@@ -1,8 +1,8 @@
 <?php
 return [
-    "routing" => [
-        "rules" => [],
+    'routing' => [
+        'rules' => [],
     ],
-    "inbounds" => [],
-    "outbounds" => [],
+    'inbounds' => [],
+    'outbounds' => [],
 ];
