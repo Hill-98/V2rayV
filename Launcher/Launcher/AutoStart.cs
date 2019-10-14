@@ -3,7 +3,7 @@ using System;
 
 namespace Launcher
 {
-    class AutoStart
+    public class AutoStart
     {
         public AutoStart(bool boot)
         {

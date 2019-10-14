@@ -30,7 +30,7 @@ namespace Launcher
             {
                 Stop();
             }
-            string V2rayBin = Program.basePath + @"storage\app\v2ray\wv2ray.exe";
+            string V2rayBin = Program.BasePath + @"storage\app\v2ray\wv2ray.exe";
             if (File.Exists(V2rayBin))
             {
                 process = new Process()

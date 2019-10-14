@@ -53,11 +53,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoStart.cs" />
+    <Compile Include="FileWatch.cs" />
+    <Compile Include="PhpDownload.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PhpDownload.Designer.cs">
+      <DependentUpon>PhpDownload.cs</DependentUpon>
+    </Compile>
     <Compile Include="Php.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="V2ray.cs" />
     <Compile Include="V2rayV.cs" />
+    <EmbeddedResource Include="PhpDownload.resx">
+      <DependentUpon>PhpDownload.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

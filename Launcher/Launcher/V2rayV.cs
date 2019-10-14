@@ -12,7 +12,7 @@ namespace Launcher
         /// <returns>操作状态码，0 = 无操作，1 = 全新安装，2 = 升级安装，-1 = 失败</returns>
         public int CheckEnvFile()
         {
-            string envFile = Program.basePath + ".env";
+            string envFile = Program.BasePath + ".env";
             string envNewHash = "new";
             string envCurrHash = "curr";
             try

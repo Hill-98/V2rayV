@@ -1,93 +1,78 @@
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Net;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Launcher
 {
     class Php
     {
-        string phpPath;
 
-        public Php(string phpPath)
+        public Php()
         {
-            this.phpPath = phpPath;
+            if (!CheckPhpVersion())
+            {
+                Application.Run(new PhpDownload());
+            }
+            UpdatePhpIni();
         }
 
-        public async Task<bool> Download()
+        private bool CheckPhpVersion()
         {
-            // 初始化下载客户端
-            WebClient client = new WebClient();
-            client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko");
-            client.DownloadFileCompleted += Client_DownloadFileCompleted;
-            client.DownloadProgressChanged += Client_DownloadProgressChanged;
-            string downloadUrl = "https://windows.php.net/downloads/releases/latest/php-7.3-nts-Win32-VC15-{0}-latest.zip";
-            if (Environment.Is64BitOperatingSystem)
-            {
-                downloadUrl = string.Format(downloadUrl, "x64");
-            } else
-            {
-                downloadUrl = string.Format(downloadUrl, "x86");
-            }
-            Program.notifyIcon.ShowBalloonTip(3000, Application.ProductName, "Downloading PHP runtime...", ToolTipIcon.Info);
+            var result = false;
             try
             {
-                string fileName = Environment.GetEnvironmentVariable("temp") + "\\vvv-php.zip";
-                File.Delete(fileName);
-                // 下载文件
-                await client.DownloadFileTaskAsync(new Uri(downloadUrl), fileName);
-                if (!Directory.Exists(phpPath))
+                var PhpProcess = new Process()
                 {
-                    Directory.CreateDirectory(phpPath);
-                }
-                ZipArchive zip = ZipFile.OpenRead(fileName);
-                // 循环 ZIP 存档文件
-                foreach (ZipArchiveEntry entry in zip.Entries)
-                {
-                    string path = Path.Combine(phpPath, entry.FullName);
-                    // 判断目标是否是目录
-                    if (path.EndsWith("/"))
+                    StartInfo =
                     {
-                        if (!Directory.Exists(Path.Combine(phpPath, entry.FullName)))
+                        FileName = Program.PhpBin,
+                        Arguments = "-r \"echo PHP_VERSION;\"",
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardOutput = true
+                    }
+                };
+                PhpProcess.OutputDataReceived += (sender, e) =>
+                {
+                    if (e.Data != null)
+                    {
+                        var PhpVersion = new Version(e.Data);
+                        if (PhpVersion.Major >= 7 && PhpVersion.Minor >= 2)
                         {
-                            Directory.CreateDirectory(path);
+                            result = true;
                         }
                     }
-                    else
-                    {
-                        entry.ExtractToFile(path, true);
-                    }
-                }
-                zip.Dispose();
-                return true;
+                };
+                PhpProcess.Start();
+                PhpProcess.BeginOutputReadLine();
+                PhpProcess.WaitForExit();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                MessageBox.Show(e.Message, Application.ProductName + " - PHP Runtime", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
             }
+            return result;
         }
+
+
 
         public void UpdatePhpIni()
         {
-            DiffFileAndUpdate(Program.basePath + "_php\\php.ini", phpPath + "\\php.ini");
-            DiffFileAndUpdate(Program.basePath + "_php\\cacert.pem", phpPath + "\\cacert.pem");
+            DiffFileAndUpdate(Program.BasePath + "_php\\php.ini", Program.PhpPath + "php.ini");
+            DiffFileAndUpdate(Program.BasePath + "_php\\cacert.pem", Program.PhpPath + "cacert.pem");
         }
 
         private void DiffFileAndUpdate(string sourceFile, string destFile)
         {
-            FileStream stream;
-            byte[] hash;
             if (File.Exists(sourceFile))
             {
                 try
                 {
-                    stream = new FileStream(sourceFile, FileMode.Open);
-                    hash = MD5.Create().ComputeHash(stream);
+                    var stream = new FileStream(sourceFile, FileMode.Open);
+                    var hash = MD5.Create().ComputeHash(stream);
                     string sourceHash = BitConverter.ToString(hash).Replace("-", "");
                     stream.Close();
                     stream = new FileStream(destFile, FileMode.Open);
@@ -103,33 +88,16 @@ namespace Launcher
                 {
                 }
             }
+
             try
             {
                 File.Copy(sourceFile, destFile, true);
             }
             catch (Exception e)
             {
-                string msg = "PHP Runtime config file copy fail.\nYou can manually copy the file {0} to {1}\nException: {2}";
-                MessageBox.Show(string.Format(msg, sourceFile, destFile, e.Message), Application.ProductName + " - PHP Runtime Config File", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            
-        }
-
-        private void Client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            string text = string.Format("Downloading PHP Runtime\n{0} MB / {1} MB", (e.BytesReceived / 1024 / 1024).ToString("0.00"), (e.TotalBytesToReceive / 1024 / 1024).ToString("0.00"));
-            Program.notifyIcon.Text = text;
-        }
-
-        private void Client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
-        {
-            if (e.Error == null)
-            {
-                Program.notifyIcon.ShowBalloonTip(3000, Application.ProductName, "PHP runtime download completed", ToolTipIcon.Info);
-
-            } else
-            {
-                Program.notifyIcon.ShowBalloonTip(3000, Application.ProductName, "PHP runtime download error", ToolTipIcon.Error);
+                const string msg = "PHP Runtime config file copy fail.\nYou can manually copy the file {0} to {1}\nException: {2}";
+                MessageBox.Show(string.Format(msg, sourceFile, destFile, e.Message),
+                    Application.ProductName + " - PHP Runtime Config File", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

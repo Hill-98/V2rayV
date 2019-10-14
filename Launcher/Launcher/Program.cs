@@ -9,166 +9,111 @@ using System.Threading;
 
 namespace Launcher
 {
-    static class Program
+    internal static class Program
     {
 #if DEBUG
-        public static string basePath = AppDomain.CurrentDomain.BaseDirectory + "..\\..\\..\\..\\";
+        public static readonly string BasePath = AppDomain.CurrentDomain.BaseDirectory + @"..\..\..\..\";
 #else
-        public static string basePath = AppDomain.CurrentDomain.BaseDirectory;
+        public static readonly string BasePath = AppDomain.CurrentDomain.BaseDirectory;
 #endif
-        private static readonly string wathPath = basePath + "storage\\app\\";
+        private static readonly string WatchPath = BasePath + @"storage\app\";
+        public static readonly string PhpPath = BasePath + @"php\";
+        public static readonly string PhpBin = PhpPath + "php.exe";
         public static NotifyIcon notifyIcon;
-        static Process V2rayV_Process;
-        static Process V2rayV_Queue_Process;
-        static void Main(string[] args)
+        private static Process V2rayV_Process;
+        private static Process V2rayV_Queue_Process;
+        private static FileWatch FileWatch;
+        
+
+        private static void Main(string[] args)
         {
             // 禁止重复运行
-            bool isRuned;
-            Mutex mutex = new Mutex(true, "OnlyRunOneInstance", out isRuned);
-            if (!isRuned)
+            _ = new Mutex(true, "OnlyRunOneInstance", out var isRun);
+            if (!isRun)
             {
                 OpenWebUI();
                 return;
             }
-            //Application.EnableVisualStyles();
-            //Application.SetCompatibleTextRenderingDefault(false);
-
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            // Php 环境初始化
+            new Php();
             // 文件监控服务
             try
             {
-                FileSystemWatcher fileWatch = new FileSystemWatcher(wathPath, "*.vvv");
-                fileWatch.Changed += FileWatch_Changed;
-                fileWatch.EnableRaisingEvents = true;
+                FileWatch = new FileWatch(WatchPath, "*.vvv");
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
             // 托盘上下文菜单
-            ContextMenu contextMenu = new ContextMenu();
+            var contextMenu = new ContextMenu();
             contextMenu.MenuItems.Add(new MenuItem(Application.ProductName, Icon_DoubleClick));
-            contextMenu.MenuItems.Add(new MenuItem("Exit", delegate (object Sender, EventArgs e)
-            {
-                Exit();
-            }));
+            contextMenu.MenuItems.Add(new MenuItem("Exit", delegate { Exit(); }));
             // 托盘图标
             notifyIcon = new NotifyIcon
             {
-                Icon = new System.Drawing.Icon(basePath + "public\\favicon.ico"),
+                Icon = new System.Drawing.Icon(BasePath + @"public\favicon.ico"),
                 Text = Application.ProductName,
                 Visible = true,
                 ContextMenu = contextMenu
             };
             notifyIcon.DoubleClick += Icon_DoubleClick;
-            if (Start(args))
-            {
-                Application.Run();
-            } else
-            {
-                Exit();
-            }
-        }
-
-        private static void FileWatch_Changed(object sender, FileSystemEventArgs e)
-        {
-            if (e.ChangeType == WatcherChangeTypes.Deleted)
-            {
-                return;
-            }
-            FileStream file = null;
-            StreamReader reader;
-            try
-            {
-                file = new FileStream(e.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                reader = new StreamReader(file);
-            }
-            catch (Exception)
-            {
-                if (file != null)
-                {
-                    file.Close();
-                }
-                return;
-            }
-            if (file.Length >= 10)
-            {
-                file.Close();
-                return;
-            }
-            string context = reader.ReadToEnd();
-            switch (e.Name)
-            {
-                case "v2ray.vvv":
-                    setV2ray(context);
-                    break;
-                case "boot.vvv":
-                    setBoot(context);
-                    break;
-            }
-            file.Close();
+            Start(args);
+            Application.Run();
+//            if (Start(args))
+//            {
+//
+//            }
+//            else
+//            {
+//                Exit();
+//            }
         }
 
         private static bool Start(string[] args)
         {
-            string context;
             try
             {
-                if (File.Exists(wathPath + "boot.vvv"))
+                string context;
+                if (File.Exists(WatchPath + "boot.vvv"))
                 {
-                    context = File.ReadAllText(wathPath + "boot.vvv");
-                    setBoot(context);
+                    context = File.ReadAllText(WatchPath + "boot.vvv");
+                    FileWatch.BootFile(context);
                 }
-                if (File.Exists(wathPath + "v2ray.vvv"))
+
+                if (File.Exists(WatchPath + "v2ray.vvv"))
                 {
-                    context = File.ReadAllText(wathPath + "v2ray.vvv");
-                    setV2ray(context);
+                    context = File.ReadAllText(WatchPath + "v2ray.vvv");
+                    FileWatch.V2RayFile(context);
                 }
             }
             catch (Exception)
             {
             }
 
-            string artisan = basePath + "artisan";
-#if DEBUG
-            string phpBin = @"D:\laragon\bin\php\php7\php.exe";
-#else
-            string phpBin = basePath + "php\\php.exe";
-            Php php = new Php(Path.GetDirectoryName(phpBin));
-            if (!File.Exists(phpBin))
-            {
-                Task<bool> phpDownload = Task.Run(() => php.Download());
-                phpDownload.Wait();
-                if (phpDownload.Result)
-                {
-                    notifyIcon.Text = Application.ProductName;
-                }
-                else
-                {
-                    Thread.Sleep(3000);
-                    return false;
-                }
-            }
-            php.UpdatePhpIni();
-            V2rayV v2rayv = new V2rayV();
-            int check_status = v2rayv.CheckEnvFile();
+            var artisan = BasePath + "artisan";
+            var v2rayV = new V2rayV();
+            var check_status = v2rayV.CheckEnvFile();
             if (check_status == -1)
             {
                 MessageBox.Show("V2rayV initialization failed,", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            else if (check_status != 0)
+            if (check_status != 0)
             {
-                Process.Start(phpBin, artisan + " config:cache");
+                Process.Start(PhpBin, artisan + " config:cache");
             }
-#endif
             V2rayV_Process = new Process()
             {
                 StartInfo =
                 {
-                    FileName = phpBin,
+                    FileName = PhpBin,
                     Arguments = artisan + " vvv:start",
-                    WorkingDirectory = basePath,
+                    WorkingDirectory = BasePath,
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     RedirectStandardOutput = true
@@ -178,30 +123,28 @@ namespace Launcher
             {
                 StartInfo =
                 {
-                    FileName = phpBin,
+                    FileName = PhpBin,
                     Arguments = artisan + " queue:work --queue=high,default",
-                    WorkingDirectory = basePath,
+                    WorkingDirectory = BasePath,
                     UseShellExecute = false,
                     CreateNoWindow = true,
                 }
             };
-            V2rayV_Process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+            V2rayV_Process.OutputDataReceived += (sender, e) =>
             {
-                if (e.Data == "Ready")
+                if (e.Data != "Ready") return;
+                try
                 {
-                    try
-                    {
-                        V2rayV_Queue_Process.Start();
-                        V2rayV_Process.CancelOutputRead();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("V2rayV Queue failed to start.\nException: " + ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Exit();
-                    }
-                    
+                    V2rayV_Queue_Process.Start();
+                    V2rayV_Process.CancelOutputRead();
                 }
-            });
+                catch (Exception ex)
+                {
+                    MessageBox.Show("V2rayV Queue failed to start.\nException: " + ex.Message,
+                        Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Exit();
+                }
+            };
 #if !DEBUG
             try
             {
@@ -213,40 +156,12 @@ namespace Launcher
                 MessageBox.Show("V2rayV failed to start.\nException: " + e.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-#endif
-#if !DEBUG
             if (args.Length == 0 || args[0] != "autorun")
             {
                 OpenWebUI();
             }
 #endif
             return true;
-        }
-
-        private static void setBoot(string context)
-        {
-            bool boot = false;
-            try
-            {
-                boot = Convert.ToBoolean(context);
-            }
-            catch (Exception)
-            {
-            }
-            new AutoStart(boot);
-        }
-
-        private static void setV2ray(string context)
-        {
-            int code = 0;
-            try
-            {
-                code = Convert.ToInt32(context);
-            }
-            catch (Exception)
-            {
-            }
-            V2ray.Control(code);
         }
 
         private static void OpenWebUI()
@@ -258,6 +173,7 @@ namespace Launcher
         {
             OpenWebUI();
         }
+
         private static void Exit()
         {
             notifyIcon.Visible = false;
@@ -265,9 +181,11 @@ namespace Launcher
             try
             {
                 KillProcessAndChildren(V2rayV_Process.Id);
-            } catch (Exception)
+            }
+            catch (Exception)
             {
             }
+
             try
             {
                 KillProcessAndChildren(V2rayV_Queue_Process.Id);
@@ -275,6 +193,7 @@ namespace Launcher
             catch (Exception)
             {
             }
+
             Application.Exit();
         }
 
@@ -288,13 +207,15 @@ namespace Launcher
             {
                 return;
             }
+
             ManagementObjectSearcher searcher = new ManagementObjectSearcher
-                    ("Select * From Win32_Process Where ParentProcessID=" + pid);
+                ("Select * From Win32_Process Where ParentProcessID=" + pid);
             ManagementObjectCollection moc = searcher.Get();
             foreach (ManagementObject mo in moc)
             {
                 KillProcessAndChildren(Convert.ToInt32(mo["ProcessID"]));
             }
+
             try
             {
                 Process proc = Process.GetProcessById(pid);
