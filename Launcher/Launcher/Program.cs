@@ -19,11 +19,10 @@ namespace Launcher
         private static readonly string WatchPath = BasePath + @"storage\app\";
         public static readonly string PhpPath = BasePath + @"php\";
         public static readonly string PhpBin = PhpPath + "php.exe";
-        public static NotifyIcon notifyIcon;
-        private static Process V2rayV_Process;
-        private static Process V2rayV_Queue_Process;
-        private static FileWatch FileWatch;
-        
+        public static NotifyIcon NotifyIcon;
+        private static Process _v2RayVProcess;
+        private static Process _v2RayVQueueProcess;
+
 
         private static void Main(string[] args)
         {
@@ -31,17 +30,17 @@ namespace Launcher
             _ = new Mutex(true, "OnlyRunOneInstance", out var isRun);
             if (!isRun)
             {
-                OpenWebUI();
+                OpenWebUi();
                 return;
             }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             // Php 环境初始化
-            new Php();
+            Php.Init();
             // 文件监控服务
             try
             {
-                FileWatch = new FileWatch(WatchPath, "*.vvv");
+                FileWatch.Init(WatchPath, "*.vvv");
             }
             catch (Exception e)
             {
@@ -54,27 +53,26 @@ namespace Launcher
             contextMenu.MenuItems.Add(new MenuItem(Application.ProductName, Icon_DoubleClick));
             contextMenu.MenuItems.Add(new MenuItem("Exit", delegate { Exit(); }));
             // 托盘图标
-            notifyIcon = new NotifyIcon
+            NotifyIcon = new NotifyIcon
             {
                 Icon = new System.Drawing.Icon(BasePath + @"public\favicon.ico"),
                 Text = Application.ProductName,
                 Visible = true,
                 ContextMenu = contextMenu
             };
-            notifyIcon.DoubleClick += Icon_DoubleClick;
-            Start(args);
-            Application.Run();
-//            if (Start(args))
-//            {
-//
-//            }
-//            else
-//            {
-//                Exit();
-//            }
+            NotifyIcon.DoubleClick += Icon_DoubleClick;
+            try
+            {
+                Start(args);
+                Application.Run();
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
-        private static bool Start(string[] args)
+        private static void Start(string[] args)
         {
             try
             {
@@ -93,21 +91,21 @@ namespace Launcher
             }
             catch (Exception)
             {
+                // ignored
             }
 
             var artisan = BasePath + "artisan";
-            var v2rayV = new V2rayV();
-            var check_status = v2rayV.CheckEnvFile();
-            if (check_status == -1)
+            var checkStatus = V2RayV.CheckEnvFile();
+            if (checkStatus == -1)
             {
                 MessageBox.Show("V2rayV initialization failed,", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
+                return;
             }
-            if (check_status != 0)
+            if (checkStatus != 0)
             {
                 Process.Start(PhpBin, artisan + " config:cache");
             }
-            V2rayV_Process = new Process()
+            _v2RayVProcess = new Process()
             {
                 StartInfo =
                 {
@@ -119,7 +117,7 @@ namespace Launcher
                     RedirectStandardOutput = true
                 }
             };
-            V2rayV_Queue_Process = new Process()
+            _v2RayVQueueProcess = new Process()
             {
                 StartInfo =
                 {
@@ -130,13 +128,13 @@ namespace Launcher
                     CreateNoWindow = true,
                 }
             };
-            V2rayV_Process.OutputDataReceived += (sender, e) =>
+            _v2RayVProcess.OutputDataReceived += (sender, e) =>
             {
                 if (e.Data != "Ready") return;
                 try
                 {
-                    V2rayV_Queue_Process.Start();
-                    V2rayV_Process.CancelOutputRead();
+                    _v2RayVQueueProcess.Start();
+                    _v2RayVProcess.CancelOutputRead();
                 }
                 catch (Exception ex)
                 {
@@ -148,50 +146,51 @@ namespace Launcher
 #if !DEBUG
             try
             {
-                V2rayV_Process.Start();
-                V2rayV_Process.BeginOutputReadLine();
+                _v2RayVProcess.Start();
+                _v2RayVProcess.BeginOutputReadLine();
             }
             catch (Exception e)
             {
                 MessageBox.Show("V2rayV failed to start.\nException: " + e.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
+                throw;
             }
-            if (args.Length == 0 || args[0] != "autorun")
+            if (args.Length == 0 || args[0] != "/autorun")
             {
-                OpenWebUI();
+                OpenWebUi();
             }
 #endif
-            return true;
         }
 
-        private static void OpenWebUI()
+        private static void OpenWebUi()
         {
             Process.Start("http://localhost:8246");
         }
 
         private static void Icon_DoubleClick(object sender, EventArgs e)
         {
-            OpenWebUI();
+            OpenWebUi();
         }
 
         private static void Exit()
         {
-            notifyIcon.Visible = false;
-            V2ray.Control(V2ray.STOP);
+            NotifyIcon.Visible = false;
+            V2Ray.Control(V2Ray.STOP);
             try
             {
-                KillProcessAndChildren(V2rayV_Process.Id);
+                KillProcessAndChildren(_v2RayVProcess.Id);
             }
             catch (Exception)
             {
+                // ignored
             }
 
             try
             {
-                KillProcessAndChildren(V2rayV_Queue_Process.Id);
+                KillProcessAndChildren(_v2RayVQueueProcess.Id);
             }
             catch (Exception)
             {
+                // ignored
             }
 
             Application.Exit();
@@ -208,17 +207,18 @@ namespace Launcher
                 return;
             }
 
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher
+            var searcher = new ManagementObjectSearcher
                 ("Select * From Win32_Process Where ParentProcessID=" + pid);
-            ManagementObjectCollection moc = searcher.Get();
-            foreach (ManagementObject mo in moc)
+            var moc = searcher.Get();
+            foreach (var o in moc)
             {
+                var mo = (ManagementObject) o;
                 KillProcessAndChildren(Convert.ToInt32(mo["ProcessID"]));
             }
 
             try
             {
-                Process proc = Process.GetProcessById(pid);
+                var proc = Process.GetProcessById(pid);
                 proc.Kill();
             }
             catch (ArgumentException)

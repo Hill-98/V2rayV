@@ -3,25 +3,17 @@ using System.IO;
 
 namespace Launcher
 {
-    public class FileWatch
+    internal static class FileWatch
     {
-        public FileWatch(string path, string filter)
+        public static void Init(string path, string filter)
         {
-            try
+            new FileSystemWatcher(path, filter)
             {
-                var Watcher = new FileSystemWatcher(path, filter)
-                {
-                    EnableRaisingEvents = true
-                };
-                Watcher.Changed += WatcherOnChanged;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+                EnableRaisingEvents = true
+            }.Changed += WatcherOnChanged;
         }
 
-        private void WatcherOnChanged(object sender, FileSystemEventArgs e)
+        private static void WatcherOnChanged(object sender, FileSystemEventArgs e)
         {
             if (e.ChangeType == WatcherChangeTypes.Deleted || e.ChangeType == WatcherChangeTypes.Renamed)
             {
@@ -59,21 +51,22 @@ namespace Launcher
             }
         }
 
-        public void BootFile(string context)
+        public static void BootFile(string context)
         {
-            var boot = false;
+            var isBoot = false;
             try
             {
-                boot = Convert.ToBoolean(context);
+                isBoot = Convert.ToBoolean(context);
             }
             catch (Exception)
             {
+                // ignored
             }
 
-            new AutoStart(boot);
+            Helper.SetAutoRun(isBoot);
         }
 
-        public void V2RayFile(string context)
+        public static void V2RayFile(string context)
         {
             var code = 0;
             try
@@ -82,9 +75,10 @@ namespace Launcher
             }
             catch (Exception)
             {
+                // ignored
             }
 
-            V2ray.Control(code);
+            V2Ray.Control(code);
         }
     }
 }

@@ -4,12 +4,12 @@ using System.Windows.Forms;
 
 namespace Launcher
 {
-    static internal class V2ray
+    internal static class V2Ray
     {
-        public const int START = 1;
+        private const int START = 1;
         public const int STOP = 2;
 
-        static Process process;
+        private static Process _process;
 
         public static void Control(int code)
         {
@@ -26,34 +26,32 @@ namespace Launcher
 
         private static void Start()
         {
-            if (process != null && !process.HasExited)
+            if (_process != null && !_process.HasExited)
             {
                 Stop();
             }
-            string V2rayBin = Program.BasePath + @"storage\app\v2ray\wv2ray.exe";
-            if (File.Exists(V2rayBin))
+            var v2RayBin = Program.BasePath + @"storage\app\v2ray\wv2ray.exe";
+            if (File.Exists(v2RayBin))
             {
-                process = new Process()
+                _process = new Process()
                 {
                     StartInfo =
                 {
-                    FileName = V2rayBin,
+                    FileName = v2RayBin,
                 }
                 };
-                process.Start();
+                _process.Start();
             } else
             {
-                Program.notifyIcon.ShowBalloonTip(3000, Application.ProductName, "V2ray Core not found.", ToolTipIcon.Info);
+                Program.NotifyIcon.ShowBalloonTip(3000, Application.ProductName, "V2ray Core not found.", ToolTipIcon.Info);
             }
         }
 
         private static void Stop()
         {
-            if (process != null && !process.HasExited)
-            {
-                process.Kill();
-                process = null;
-            }
+            if (_process == null || _process.HasExited) return;
+            _process.Kill();
+            _process = null;
         }
     }
 }

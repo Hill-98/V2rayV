@@ -9,13 +9,26 @@ namespace Launcher
 {
     public partial class PhpDownload : Form
     {
-        private bool complete = false;
+        private bool _complete = false;
         public PhpDownload()
         {
             InitializeComponent();
         }
 
-        public async void DownloadPhp()
+        private void PhpDownload_Load(object sender, EventArgs e)
+        {
+            DownloadPhp();
+        }
+
+        private void PhpDownload_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (!_complete)
+            {
+                Application.Exit();
+            }
+        }
+
+        private async void DownloadPhp()
         {
             // 初始化下载客户端
             var client = new WebClient();
@@ -52,7 +65,7 @@ namespace Launcher
                 }
                 zip.Dispose();
                 File.Delete(fileName);
-                complete = true;
+                _complete = true;
                 Close();
             }
             catch (Exception e)
@@ -69,25 +82,10 @@ namespace Launcher
 
         private void Client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            if (e.Error != null)
-            {
-                MessageBox.Show("Download failed.", Application.ProductName + " - PHP Runtime", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                Application.Exit();
-            }
-        }
-
-        private void PhpDownload_Load(object sender, EventArgs e)
-        {
-            DownloadPhp();
-        }
-
-        private void PhpDownload_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            if (!complete)
-            {
-                Application.Exit();
-            }
+            if (e.Error == null) return;
+            MessageBox.Show("Download failed.", Application.ProductName + " - PHP Runtime", MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+            Close();
         }
     }
 }

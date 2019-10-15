@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Launcher</RootNamespace>
     <AssemblyName>Launcher</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -28,7 +28,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -52,8 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoStart.cs" />
     <Compile Include="FileWatch.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="PhpDownload.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -63,8 +63,8 @@
     <Compile Include="Php.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="V2ray.cs" />
-    <Compile Include="V2rayV.cs" />
+    <Compile Include="V2Ray.cs" />
+    <Compile Include="V2RayV.cs" />
     <EmbeddedResource Include="PhpDownload.resx">
       <DependentUpon>PhpDownload.cs</DependentUpon>
     </EmbeddedResource>
