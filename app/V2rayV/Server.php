@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\V2rayV;
@@ -16,6 +17,7 @@ use App\V2rayV\Validation\Server as Validation;
 class Server extends Data
 {
     use switchEnable;
+
     protected $dataCol = [
         'name',
         'subscribe_id',
@@ -90,7 +92,7 @@ class Server extends Data
         if (isset($data['local_port'])) {
             $data['local_port'] = (int)$data['local_port'];
         }
-        $data['enable'] = !empty($data['enable']);
+        $data['enable'] = $model['enable'] ?? !empty($data['enable']);
         return parent::save($data, $model);
     }
 
