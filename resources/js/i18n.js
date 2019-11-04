@@ -3,7 +3,7 @@ import VueI18n from "vue-i18n";
 import en_US from "./i18n/en-US/main";
 import DatePicker from "element-ui/lib/date-picker"
 import ElementLocale from "element-ui/lib/locale"
-import forEach from "lodash/forEach";
+import find from "lodash/find";
 import includes from "lodash/includes";
 import isString from "lodash/isString";
 
@@ -22,32 +22,23 @@ const messages = {
     "en-US": en_US
 };
 
-export const Languages = [
+export const languagesCode = [
     "en-US",
     "zh-CN"
 ];
 
-const default_lang = "en-US";
-const loadedLanguages = [default_lang];
+const defaultLanguage = "en-US";
+const loadedLanguages = [defaultLanguage];
 // 获取用户语言
 let lang = localStorage.getItem("vvv-lang");
-if (!isString(lang) || !includes(Languages, lang)) {
-    // 遍历浏览器语言环境
-    forEach(navigator.languages, value => {
-        if (includes(Languages, value)) {
-            lang = value;
-            return false;
-        }
-    });
-}
-
-if (!isString(lang)) {
-    lang = default_lang
+if (!includes(languagesCode, lang)) {
+    const browserLanguages = navigator.languages || [navigator.browserLanguage, navigator.systemLanguage, navigator.userLanguage];
+    lang = find(browserLanguages, value => includes(languagesCode, value)) || defaultLanguage;
 }
 
 export const i18n = new VueI18n({
     locale: lang,
-    fallbackLocale: default_lang,
+    fallbackLocale: defaultLanguage,
     silentFallbackWarn: true,
     messages,
 });
