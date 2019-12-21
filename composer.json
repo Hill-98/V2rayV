@@ -13,6 +13,7 @@
         "ramsey/uuid": "^3.8"
     },
     "require-dev": {
+        "roave/security-advisories": "dev-master",
         "barryvdh/laravel-ide-helper": "^2.6",
         "doctrine/dbal": "^2.9",
         "facade/ignition": "^1.4",

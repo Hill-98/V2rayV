@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === "production") {
         {
             useBuiltIns: "usage",
             modules: false,
-            corejs: 2,
+            corejs: 3,
         }
     ]);
 }
