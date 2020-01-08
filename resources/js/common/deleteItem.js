@@ -1,6 +1,7 @@
 import difference from "lodash/difference";
 import {MessageBox} from "element-ui";
 import isUndefined from "lodash/isUndefined";
+import forEach from "lodash/forEach";
 
 export default (item, popover, api, _this) => {
     let delete_items = [];
@@ -13,13 +14,11 @@ export default (item, popover, api, _this) => {
     const delete_func = () => {
         _this.working = true;
         const success_list = [];
-        const promises = [];
-        for (const item of delete_items) {
-            promises.push(api.delete(item.id)
-                    .then(() => success_list.push(item))
-                    .catch(window.EMPTY_FUNC));
-        }
-        Promise.all(promises).finally(() => {
+        let x = 0;
+        const d = () => {
+            x++;
+            if (x < delete_items.length) return;
+
             _this.items = difference(_this.items, success_list);
             _this.select_items = [];
             _this.$refs["table"].clearSelection();
@@ -33,9 +32,15 @@ export default (item, popover, api, _this) => {
                 }
                 if (page > 0) _this.getIndexList(page);
             }
+            _this.$set(_this.meta, "last_page", Math.round(_this.meta.total / _this.meta.per_page));
             _this.working = false;
+        };
+        forEach(delete_items,  item => {
+            api.delete(item.id)
+                .then(() => success_list.push(item))
+                .catch(window.EMPTY_FUNC)
+                .finally(d);
         });
-
     };
     if (isUndefined(popover)) {
         MessageBox.confirm("你确定要删除吗？", "删除")

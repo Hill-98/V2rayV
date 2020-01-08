@@ -7,7 +7,7 @@ import RoutingCustom from "./components/Routing/custom"
 import RoutingEdit from "./components/Routing/edit";
 import Subscribe from "./components/Subscribe/index";
 import SubscribeEdit from "./components/Subscribe/edit";
-import {i18n, Languages, loadLanguageAsync} from "./i18n";
+import {i18n, languagesCode, loadLanguageAsync} from "./i18n";
 import {forEach, map} from "lodash/collection";
 import concat from "lodash/concat";
 import {snakeCase, startsWith, trimStart} from "lodash/string";
@@ -137,7 +137,7 @@ forEach(routes, value => {
     }
 });
 // 为所有语言首页生成重定向
-forEach(Languages, value => {
+forEach(languagesCode, value => {
     redirect.unshift(    {
         path: `/${value}`,
         redirect: `/${value}/servers`

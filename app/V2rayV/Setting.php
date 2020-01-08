@@ -52,14 +52,23 @@ class Setting
         return $this->config[$name] ?? null;
     }
 
+    /**
+     * @param $name
+     * @param $value
+     * @throws ValidationException
+     */
     public function __set($name, $value)
     {
-        // TODO: Implement __set() method.
+        if (!isset($this->config[$name])) {
+            throw new \RuntimeException("Setting: $name key not exist");
+        }
+        $this->config[$name] = $value;
+        $this->save($this->config);
     }
 
     public function __isset($name)
     {
-        // TODO: Implement __isset() method.
+        return isset($this->config[$name]);
     }
 
     /**
@@ -100,9 +109,9 @@ class Setting
      */
     public function setMainServer(int $id): bool
     {
-        $this->config['main_server'] = $id;
         try {
-            return $this->save($this->config);
+            $this->main_server = $id;
+            return true;
         } catch (ValidationException $e) {
             return false;
         }

@@ -94,6 +94,8 @@ class Generate
             $server = $this->serverModel->get($this->mainServer);
         } catch (NotExist $e) {
             $server = $this->serverModel->list(false)->first();
+            $this->setting->setMainServer($server->id);
+            echo '设置服务器';
             $this->mainServer = $server->id;
         }
         if ($this->serverList->where('id', $server->id)->isEmpty()) {

@@ -5,7 +5,6 @@ import DatePicker from "element-ui/lib/date-picker"
 import ElementLocale from "element-ui/lib/locale"
 import find from "lodash/find";
 import includes from "lodash/includes";
-import isString from "lodash/isString";
 
 Vue.use(VueI18n);
 Vue.use(DatePicker);
@@ -50,7 +49,7 @@ export const i18n = new VueI18n({
 ElementLocale.i18n((key, value) => i18n.t(key, value));
 
 export function loadLanguageAsync (lang, init) {
-    if ((init || i18n.locale !== lang) && includes(Languages, lang)) {
+    if ((init || i18n.locale !== lang) && includes(languagesCode, lang)) {
         if (!includes(loadedLanguages, lang)) {
             return import(
                 /* webpackInclude: /main\.js$/ */

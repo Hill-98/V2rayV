@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\V2ray\ValidationException;
-use App\Jobs\V2rayControl;
 use App\Models\ErrorCode;
 use App\V2rayV\Setting;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
@@ -23,18 +23,18 @@ class SettingController extends Controller
     }
 
     /**
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function get(): \Illuminate\Http\JsonResponse
+    public function get(): JsonResponse
     {
         return Response::result(true, 0, '', $this->model->get());
     }
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function save(Request $request): ?\Illuminate\Http\JsonResponse
+    public function save(Request $request): ?JsonResponse
     {
         try {
             $result = $this->model->save($request->post());
@@ -50,18 +50,18 @@ class SettingController extends Controller
     }
 
     /**
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function getMainServer(): \Illuminate\Http\JsonResponse
+    public function getMainServer(): JsonResponse
     {
         return Response::result(true, 0, '', ['id' => $this->model->main_server]);
     }
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function setMainServer(Request $request): \Illuminate\Http\JsonResponse
+    public function setMainServer(Request $request): JsonResponse
     {
         $request->validate([
             'id' => 'required|numeric',

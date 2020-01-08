@@ -1,4 +1,5 @@
 module.exports = {
+    root: true,
     "env": {
         "browser": true,
         "es6": true
@@ -14,8 +15,6 @@ module.exports = {
     },
     "parserOptions": {
         "parser": "babel-eslint",
-        "ecmaVersion": 2018,
-        "sourceType": "module"
     },
     "plugins": [
         "vue",
@@ -23,12 +22,6 @@ module.exports = {
         "babel"
     ],
     "rules": {
-        "no-empty": [
-            "error",
-            {
-                "allowEmptyCatch": true
-            }
-        ],
         "babel/no-invalid-this": 1,
     }
 };

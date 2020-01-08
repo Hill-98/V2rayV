@@ -1,24 +1,24 @@
 const mix = require("laravel-mix");
 
 mix.options({
-        extractVueStyles: true,
+    extractVueStyles: true,
 });
 
 mix.webpackConfig(
     {
         module: {
             rules: [
-            {
-                enforce: "pre",
-                test: /\.(js|vue)$/,
-                exclude: /node_modules/,
-                loader: "eslint-loader",
-            },
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: "babel-loader",
-            },
+                {
+                    enforce: "pre",
+                    test: /\.(js|vue)$/,
+                    exclude: /node_modules/,
+                    loader: "eslint-loader",
+                },
+                {
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    loader: "babel-loader",
+                },
             ]
         },
     }
