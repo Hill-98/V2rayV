@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace App\V2rayV;
 
-use App\Exceptions\V2ray\NotExist;
 use App\Exceptions\V2ray\ShareURL\ResolveException;
 use App\Exceptions\V2ray\ValidationException;
-use \App\Helper\V2rayN\ShareURL as V2rayNShareURL;
+use App\Helper\V2rayN\ShareURL as V2rayNShareURL;
 use App\Models\Server as ServerModel;
 use Illuminate\Support\Str;
 
@@ -78,6 +77,7 @@ class ShareURL
                 $result['fail']++;
                 continue;
             }
+            unset($serverConfig['enable']);
             if (empty($subscribe_id)) {
                 if (isset($serverConfig['subscribe_id'])) {
                     unset($serverConfig['subscribe_id']);

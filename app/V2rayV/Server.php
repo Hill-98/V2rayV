@@ -92,7 +92,7 @@ class Server extends Data
         if (isset($data['local_port'])) {
             $data['local_port'] = (int)$data['local_port'];
         }
-        $data['enable'] = $model['enable'] ?? !empty($data['enable']);
+        $data['enable'] = $data['enable'] ?? $model['enable'] ?? false;
         return parent::save($data, $model);
     }
 
