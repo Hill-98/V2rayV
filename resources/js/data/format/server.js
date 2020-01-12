@@ -49,6 +49,9 @@ export default data => {
             data.network_setting.host = map(split(data.network_setting.host, ","), trim);
         }
     }
+    if (data.network === "ws" || data.network === "http") {
+        data.network_setting.path = data.network_setting.path ? "/" : data.network_setting.path
+    }
     if (isArray(data.security_setting)) {
         data.security_setting = {
             alpn: []
@@ -56,6 +59,5 @@ export default data => {
     }
     if (has(data.mux, "concurrency")) data.mux.concurrency = toInteger(data.mux.concurrency);
     if (has(data, "local_port")) data.local_port = toInteger(data.local_port);
-    console.log(data);
     return data;
 }

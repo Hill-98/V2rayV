@@ -393,9 +393,7 @@
                             {
                                 validator: (rule, value, callback) => {
                                     if (isEmpty(value)) {
-                                        callback(new Error(this.$t("common.wrong_input", {
-                                            value: this.$t("common.path")
-                                        })));
+                                        callback();
                                         return;
                                     }
                                     const ok = every(map(split(value, ","), trim), value => {
@@ -404,13 +402,15 @@
                                     if (ok) {
                                         callback();
                                     } else {
-                                        callback(false);
+                                        callback(new Error(this.$t("common.wrong_input", {
+                                            value: this.$t("common.path")
+                                        })));
                                     }
                                 },
                                 trigger: "blur",
                             }
                         ],
-                        // http end
+                        // ws http end
                         headers: {
                             validator: (rule, value, callback) => {
                                 if (isEmpty(value)) {

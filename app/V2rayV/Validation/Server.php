@@ -254,7 +254,8 @@ class Server extends Validation
         if (empty($config['host']) || empty($config['path']) || !Str::startsWith($config['path'], '/')) {
             return false;
         }
-        foreach ($config['host'] as $value) {
+        $hosts = explode(',', $config['host']);
+        foreach ($hosts as $value) {
             if (filter_var($value, FILTER_VALIDATE_DOMAIN) !== $value) {
                 return false;
             }
@@ -297,7 +298,7 @@ class Server extends Validation
     {
         $alpnList = [
             'http/1.1',
-            'h2'
+            'http/2'
         ];
         $host = $config['serverName'] ?? '';
         if (!empty($config['serverName']) && filter_var($host, FILTER_VALIDATE_DOMAIN) !== $host) {

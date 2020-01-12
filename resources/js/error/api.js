@@ -89,15 +89,11 @@ export default function (target, data) {
             error_text = i18n.t(`error.api.${data.code}`, {value: name});
         }
     }
-    if (!isUndefined(error_text)) {
-        Message.error({
-            message: error_text
-        });
+    if (isUndefined(error_text)) {
+        error_text = data.message;
     }
-    if (has(data, "errors")) {
-        Message.error({
-            message: data.message
-        });
-    }
+    Message.error({
+        message: error_text
+    });
     return Promise.reject(data);
 }

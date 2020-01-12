@@ -10,12 +10,17 @@ const client = axios.create({
 });
 client.interceptors.request.use(request => request, error => NetworkError(error));
 client.interceptors.response.use(response => {
-    if (response.data.success) {
+    if (response.data.success === true) {
         return Promise.resolve(response);
     } else {
-        const uri = split(response.config.url, "/")[2];
+        const uri = split(response.config.url, "/")[0];
         let target = uri.match(/(.*)\?/);
-        if (target) target = target[1]; else target = uri;
+        if (target) {
+            target = target[1];
+        } else {
+            target = uri;
+        }
+        console.log(ApiError(target, response.data));
         return ApiError(target, response.data);
     }
 }, error => NetworkError(error));
