@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\V2rayControl;
 use App\V2rayV\ShareURL;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;

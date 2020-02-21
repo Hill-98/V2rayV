@@ -23,6 +23,9 @@ class V2ray
 
     public function checkUpdate()
     {
+        if (0 !== stripos(PHP_OS_FAMILY, 'WIN')) {
+            return false;
+        }
         $version = $this->getVersion();
         $result = [
             'is_update' => false,
@@ -51,6 +54,9 @@ class V2ray
 
     public function getVersion(): string
     {
+        if (0 !== stripos(PHP_OS_FAMILY, 'WIN')) {
+            return 'Not Windows Version';
+        }
         $v2ray_bin = storage_path('app/v2ray/v2ray.exe');
         $version = 'null';
         if (file_exists($v2ray_bin)) {

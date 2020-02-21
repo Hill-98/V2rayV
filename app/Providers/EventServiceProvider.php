@@ -2,12 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Cache;
+use App\Jobs\V2rayControl;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Str;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -32,9 +31,7 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
         Event::listen('V2rayControl', static function () {
-            $token = (string)random_int(10000, 999999);
-            Cache::put('V2rayControl', $token);
-            \App\Jobs\V2rayControl::dispatch($token)->delay(3)->onQueue('high');
+            V2rayControl::dispatch()->delay(3)->onQueue('high');
         });
     }
 }

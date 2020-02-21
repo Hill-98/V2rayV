@@ -18,18 +18,25 @@ class V2rayControl implements ShouldQueue
 
     public $tries = 1;
 
-    private $token;
     private $code;
+
+    const systemdUnit = <<<EOF
+[Unit]
+Description=V2rayV Control V2ray
+PartOf=V2rayV.service
+
+[Service]
+ExecStart=%s --config %s
+EOF;
+
 
     /**
      * Create a new job instance.
      *
-     * @param string $token
      * @param int $code
      */
-    public function __construct(string $token, int $code = 0)
+    public function __construct(int $code = 0)
     {
-        $this->token = $token;
         $this->code = $code;
     }
 
@@ -43,10 +50,6 @@ class V2rayControl implements ShouldQueue
     {
         if ($this->code !== 0) {
             $this->control($this->code);
-            return;
-        }
-        $cache_token = Cache::get('V2rayControl');
-        if ($cache_token !== $this->token) {
             return;
         }
         $config = $generate();
@@ -73,6 +76,25 @@ class V2rayControl implements ShouldQueue
      */
     public function control($command): void
     {
-        Storage::put('v2ray.vvv', $command);
+        if (0 === stripos(PHP_OS_FAMILY, 'WIN')) {
+            Storage::put('v2ray.vvv', $command);
+            return;
+        }
+        $v2rayPath = system('/usr/bin/which v2ray');
+        if (!file_exists($v2rayPath)) {
+            $v2rayPath = '/usr/bin/v2ray/v2ray';
+        }
+        $userUnitPath = getenv('HOME').'/.config/systemd/user';
+        $unitName = 'v2rayv-v2ray.service';
+        if (!file_exists($userUnitPath) && !mkdir($userUnitPath, 755, true) && !is_dir($userUnitPath)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $userUnitPath));
+        }
+        file_put_contents("$userUnitPath/$unitName", sprintf(self::systemdUnit, $v2rayPath, Storage::path('v2ray/config.json')));
+        exec('/usr/bin/systemctl --user daemon-reload');
+        if ($command === V2ray::START) {
+            exec("/usr/bin/systemctl --user start $unitName");
+        } else {
+            exec("/usr/bin/systemctl --user stop $unitName");
+        }
     }
 }

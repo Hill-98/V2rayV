@@ -1,0 +1,13 @@
+[Unit]
+Description=V2rayV Web Server
+Wants=network-online.target
+Requires=V2rayV-Queue.service
+After=V2rayV-Queue.service
+
+[Service]
+ExecStart=/usr/bin/php artisan vvv:start
+; V2rayV directory
+WorkingDirectory=
+
+[Install]
+WantedBy=default.target

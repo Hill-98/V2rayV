@@ -1,0 +1,9 @@
+[Unit]
+Description=V2rayV Queue
+Requires=V2rayV.service
+PartOf=V2rayV.service
+
+[Service]
+ExecStart=/usr/bin/php artisan queue:work --queue=high,default
+; V2rayV directory
+WorkingDirectory=

@@ -6,7 +6,6 @@ use App\Exceptions\V2ray\ValidationException;
 use App\Http\Resources\Subscribe as ResourceModel;
 use App\Http\Resources\SubscribeCollection as ResourceCollection;
 use App\Jobs\SubscribeUpdate;
-use App\Jobs\V2rayControl;
 use App\Models\DataFilter;
 use App\V2rayV\Subscribe;
 use Illuminate\Http\Request;

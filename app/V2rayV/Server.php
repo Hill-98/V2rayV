@@ -6,7 +6,6 @@ namespace App\V2rayV;
 
 use App\Exceptions\V2ray\AlreadyExists;
 use App\Exceptions\V2ray\DataSaveFail;
-use App\Exceptions\V2ray\DeleteFail;
 use App\Exceptions\V2ray\NotExist;
 use App\Exceptions\V2ray\ValidationException;
 use App\Exceptions\V2ray\Server\ServerLocalPortExist;
@@ -16,7 +15,7 @@ use App\V2rayV\Validation\Server as Validation;
 
 class Server extends Data
 {
-    use switchEnable;
+    use SwitchEnable;
 
     protected $dataCol = [
         'name',

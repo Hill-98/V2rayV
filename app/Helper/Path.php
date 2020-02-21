@@ -13,8 +13,8 @@ class Path
     public static function resolve(string $path, bool $real = false): string
     {
         $path = storage_path("app/$path");
-        if ($real) {
-            $path = str_replace('/', "\\", $path);
+        if ($real && 0 === stripos(PHP_OS_FAMILY, 'WIN')) {
+            $path = (string)str_replace('/', "\\", $path);
         }
         return $path;
     }

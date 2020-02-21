@@ -46,6 +46,7 @@ class VStart extends Command
             });
         }
         SubscribeUpdate::dispatch();
+        event('V2rayControl');
         $this->call('serve', [
             '--port' => $this->input->getOption('port') ?: 8246
         ]);

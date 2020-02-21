@@ -53,7 +53,7 @@ class V2rayUpdate implements ShouldQueue
             ]);
             $zip = new ZipArchive();
             if ($zip->open($zip_path, ZIPARCHIVE::CHECKCONS) === true) {
-                V2rayControl::dispatchNow('', V2ray::STOP);
+                V2rayControl::dispatchNow(V2ray::STOP);
                 sleep(1);
                 $v2ray_dir = Storage::path('v2ray');
                 if (Storage::exists('v2ray')) {
