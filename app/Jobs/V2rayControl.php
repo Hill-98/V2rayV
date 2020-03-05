@@ -23,6 +23,8 @@ class V2rayControl implements ShouldQueue
     const systemdUnit = <<<EOF
 [Unit]
 Description=V2rayV Control V2ray
+Requires=V2rayV.service
+After=V2rayV.service
 PartOf=V2rayV.service
 
 [Service]

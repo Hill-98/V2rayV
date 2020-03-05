@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\V2ray\ValidationException;
+use App\Helper\Path;
 use App\Http\Resources\Server as ResourceModel;
 use App\Http\Resources\ServerCollection as ResourceCollection;
 use App\Models\DataFilter;
@@ -116,8 +117,13 @@ class ServerController extends Controller
         try {
             /** @var \App\Models\Server $server */
             $server = $this->model->get((int)$request->input('id'));
-            exec("cmd /c chcp 65001 && ping -w 1000 \"$server->address\"", $output);
-            return Response::result(true, 0, '', array_slice($output, 2));
+            if (0 === stripos(PHP_OS_FAMILY, 'WIN')) {
+                exec("cmd /c chcp 65001 && ping -w 1000 \"$server->address\"", $output);
+                $result = array_splice($output, 2);
+            } else {
+                exec("LANG=C ping -W 1 -c 4 \"$server->address\"", $result);
+            }
+            return Response::result(true, 0, '', $result);
         } catch (\Exception $e) {
             return Response::result(false, $e->getCode(), $e->getMessage());
         }
