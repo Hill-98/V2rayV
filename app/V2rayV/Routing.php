@@ -11,7 +11,8 @@ use App\V2rayV\Validation\Routing as Validation;
 
 class Routing extends Data
 {
-    use switchEnable;
+    use SwitchEnable;
+
     protected $dataCol = [
         'name',
         'proxy',
