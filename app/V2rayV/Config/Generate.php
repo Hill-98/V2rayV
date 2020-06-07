@@ -5,9 +5,7 @@ namespace App\V2rayV\Config;
 
 use App\Exceptions\V2ray\NotExist;
 use App\V2rayV\DefaultRouting;
-use App\V2rayV\File\AccessLog;
 use App\V2rayV\File\Dns;
-use App\V2rayV\File\ErrorLog;
 use App\V2rayV\Routing;
 use App\V2rayV\Server;
 use App\V2rayV\Setting;
@@ -144,8 +142,8 @@ class Generate
     private function logConfig(): array
     {
         $config = [
-            'access' => (new AccessLog())->getPath(true),
-            'error' => (new ErrorLog())->getPath(true),
+            'access' => sys_get_temp_dir().'/v2ray-access.v2rayv.log',
+            'error' => sys_get_temp_dir().'/v2ray-access.v2rayv.log',
             'loglevel' => $this->setting->log_level
         ];
         return $config;
