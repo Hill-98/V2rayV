@@ -23,15 +23,15 @@ class V2ray
 
     public function checkUpdate()
     {
-        if (0 !== stripos(PHP_OS_FAMILY, 'WIN')) {
-            return false;
-        }
         $version = $this->getVersion();
         $result = [
             'is_update' => false,
             'curr_version' => $version,
             'new_version' => $version
         ];
+        if (0 !== stripos(PHP_OS_FAMILY, 'WIN')) {
+            return $result;
+        }
         $client = new GuzzleHttpClient([
             'base_uri' => 'https://api.github.com',
             'proxy' => $this->network_helper->getProxyUrl($this->setting->update_v2ray_proxy)
