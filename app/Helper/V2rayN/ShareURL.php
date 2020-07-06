@@ -83,7 +83,7 @@ class ShareURL
                 'alpn' => [
                     'http/1.1'
                 ],
-                'allowInsecure' => true
+                'allowInsecure' => false
             ],
             'mux' => [
                 'enabled' => false,

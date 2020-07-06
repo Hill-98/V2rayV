@@ -37,12 +37,12 @@ class V2ray
             'proxy' => $this->network_helper->getProxyUrl($this->setting->update_v2ray_proxy)
         ]);
         try {
-            $response = $client->get('/repos/v2ray/v2ray-core/releases/latest');
+            $response = $client->get('/repos/v2fly/v2ray-core/releases/latest');
             $json = json_decode($response->getBody()->getContents(), true);
             if (!empty($json['tag_name']) && $json['tag_name'] !== "v${result['curr_version']}") {
                 $result['is_update'] = true;
                 $result['new_version'] = Str::after($json['tag_name'], 'v');
-                $url = "https://github.com/v2ray/v2ray-core/releases/download/${json['tag_name']}/v2ray-windows-%s.zip";
+                $url = "https://github.com/v2fly/v2ray-core/releases/download/${json['tag_name']}/v2ray-windows-%s.zip";
                 $url = sprintf($url, PHP_INT_SIZE === 4 ? '32' : '64');
                 V2rayUpdate::dispatch($url);
             }
