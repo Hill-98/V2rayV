@@ -35,7 +35,7 @@ namespace Launcher
             client.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko");
             client.DownloadFileCompleted += Client_DownloadFileCompleted;
             client.DownloadProgressChanged += Client_DownloadProgressChanged;
-            const string downloadUrl = "https://windows.php.net/downloads/releases/latest/php-7.3-nts-Win32-VC15-{0}-latest.zip";
+            const string downloadUrl = "https://windows.php.net/downloads/releases/latest/php-7.4-nts-Win32-VC15-{0}-latest.zip";
             try
             {
                 var fileName = Path.GetTempFileName();
