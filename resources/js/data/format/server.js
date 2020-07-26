@@ -50,7 +50,7 @@ export default data => {
         }
     }
     if (data.network === "ws" || data.network === "http") {
-        data.network_setting.path = data.network_setting.path ? "/" : data.network_setting.path
+        data.network_setting.path = data.network_setting.path === undefined ? "/" : data.network_setting.path
     }
     if (isArray(data.security_setting)) {
         data.security_setting = {
